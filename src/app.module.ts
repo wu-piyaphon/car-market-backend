@@ -4,18 +4,15 @@ import { AppService } from './app.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AppConfig, DatabaseConfig } from './config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { UsersModule } from './users/users.module';
-import { AuthModule } from './auth/auth.module';
-import { CarsModule } from './cars/cars.module';
-import { BrandsModule } from './brands/brands.module';
-import { TransmissionsModule } from './transmissions/transmissions.module';
-import { CarCategoriesModule } from './car-categories/car-categories.module';
-import { CarTypesModule } from './car-types/car-types.module';
-import { CarBrandsModule } from './car-brands/car-brands.module';
-import { CarTransmissionsModule } from './car-transmissions/car-transmissions.module';
-import { CarRequestsModule } from './car-requests/car-requests.module';
-import { SellingRequestsModule } from './selling-requests/selling-requests.module';
-import { EstimateRequestsModule } from './estimate-requests/estimate-requests.module';
+import { UsersModule } from '@/users/users.module';
+import { AuthModule } from '@/auth/auth.module';
+import { CarsModule } from '@/cars/cars.module';
+import { CarBrandsModule } from '@/car-brands/car-brands.module';
+import { CarTransmissionsModule } from '@/car-transmissions/car-transmissions.module';
+import { CarCategoriesModule } from '@/car-categories/car-categories.module';
+import { CarTypesModule } from '@/car-types/car-types.module';
+import { SellingRequestsModule } from '@/selling-requests/selling-requests.module';
+import { EstimateRequestsModule } from '@/estimate-requests/estimate-requests.module';
 
 @Module({
   imports: [
@@ -33,13 +30,12 @@ import { EstimateRequestsModule } from './estimate-requests/estimate-requests.mo
     UsersModule,
     AuthModule,
     CarsModule,
-    BrandsModule,
-    TransmissionsModule,
+    CarBrandsModule,
+    CarTransmissionsModule,
     CarCategoriesModule,
     CarTypesModule,
     CarBrandsModule,
     CarTransmissionsModule,
-    CarRequestsModule,
     SellingRequestsModule,
     EstimateRequestsModule,
   ],

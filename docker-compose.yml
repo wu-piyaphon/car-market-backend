@@ -1,63 +1,46 @@
 services:
   db:
-    image: postgres:15-alpine
+    image: postgres:17-alpine
+    container_name: database
     environment:
-      POSTGRES_USER: ${DB_USERNAME}
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
-      POSTGRES_DB: ${DB_DATABASE}
-    container_name: good-car-market-postgres
-    volumes:
-      - ./pgdata:/var/lib/postgresql/data # Volume for persistent data
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
     ports:
       - 5432:5432
-    healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -U ${DB_USERNAME}']
-      interval: 10s
-      timeout: 5s
-      retries: 5
-    restart: always
-    networks:
-      - good-car-market-network
+    volumes:
+      - db-data:/var/lib/postgresql/data
 
-  app:
+  app-dev:
+    container_name: nest-app-dev
     build:
       context: .
-      dockerfile: Dockerfile
-    container_name: good-car-market-app
-    environment:
-      - DATABASE_HOST=${DB_HOST}
-      - DATABASE_PORT=${DB_PORT}
-      - DATABASE_USER=${DB_USERNAME}
-      - DATABASE_PASSWORD=${DB_PASSWORD}
-      - DATABASE_NAME=${DB_DATABASE}
+      dockerfile: Dockerfile.dev
+    env_file:
+      - .env.development
     ports:
       - 3000:3000
     depends_on:
       - db
     volumes:
-      - .:/app # Bind Mount for hot reloading
-    networks:
-      - good-car-market-network
-    restart: always
-    healthcheck:
-      test: ['CMD-SHELL', 'curl -f http://localhost:3000/health || exit 1']
-      interval: 30s
-      timeout: 10s
-      retries: 3
+      - .:/app
+      - /app/node_modules
+    profiles:
+      - dev
 
-  pgadmin:
-    image: dpage/pgadmin4
-    container_name: good-car-market-pgadmin
-    environment:
-      - PGADMIN_DEFAULT_EMAIL=${PGADMIN_EMAIL}
-      - PGADMIN_DEFAULT_PASSWORD=${PGADMIN_PASSWORD}
+  app-prod:
+    container_name: nest-app-prod
+    build:
+      context: .
+      dockerfile: Dockerfile.prod
+    env_file:
+      - .env.production
     ports:
-      - ${PGADMIN_HOST_PORT}:${PGADMIN_CONTAINER_PORT}
-    networks:
-      - good-car-market-network
+      - 8080:3000
     depends_on:
       - db
+    profiles:
+      - prod
 
-networks:
-  good-car-market-network:
-    driver: bridge
+volumes:
+  db-data:

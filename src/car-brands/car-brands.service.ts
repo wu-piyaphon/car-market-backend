@@ -1,7 +1,11 @@
 import { CreateCarBrandDto } from '@/car-brands/dtos/create-car-brand.dto';
 import { UpdateCarBrandDto } from '@/car-brands/dtos/update-car-brand.dto';
 import { CarBrand } from '@/car-brands/entities/car-brand.entity';
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
@@ -16,34 +20,44 @@ export class CarBrandsService {
     return this.carBrandRepository.find();
   }
 
-  async findOne(id: number): Promise<CarBrand> {
-    const carBrand = await this.carBrandRepository.findOne({ where: { id } });
-    if (!carBrand) {
+  async findOne(id: string): Promise<CarBrand> {
+    const brand = await this.carBrandRepository.findOne({ where: { id } });
+    if (!brand) {
       throw new NotFoundException('Car brand not found');
     }
-    return carBrand;
+    return brand;
   }
 
   async create(createCarBrandDto: CreateCarBrandDto): Promise<CarBrand> {
-    const carBrand = this.carBrandRepository.create(createCarBrandDto);
-    return this.carBrandRepository.save(carBrand);
+    const brand = this.carBrandRepository.create(createCarBrandDto);
+    try {
+      return await this.carBrandRepository.save(brand);
+    } catch (error) {
+      if (error.code === '23505') {
+        throw new BadRequestException('Car brand already exists');
+      }
+      throw error;
+    }
   }
 
   async update(
-    id: number,
+    id: string,
     updateCarBrandDto: UpdateCarBrandDto,
   ): Promise<CarBrand> {
-    const existingCarBrand = await this.findOne(id);
-    Object.assign(existingCarBrand, updateCarBrandDto);
-    await this.carBrandRepository.save(existingCarBrand);
-
-    return existingCarBrand;
+    const existingBrand = await this.findOne(id);
+    this.carBrandRepository.merge(existingBrand, updateCarBrandDto);
+    try {
+      return await this.carBrandRepository.save(existingBrand);
+    } catch (error) {
+      if (error.code === '23505') {
+        throw new BadRequestException('Car brand already exists');
+      }
+      throw error;
+    }
   }
 
-  async remove(id: number): Promise<void> {
-    const result = await this.carBrandRepository.delete(id);
-    if (result.affected === 0) {
-      throw new NotFoundException('Car brand not found');
-    }
+  async remove(id: string): Promise<void> {
+    const brand = await this.findOne(id);
+    await this.carBrandRepository.remove(brand);
   }
 }

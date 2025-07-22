@@ -15,30 +15,30 @@ export class CarBrandsController {
   constructor(private readonly carBrandsService: CarBrandsService) {}
 
   @Get()
-  async findAll(): Promise<CarBrand[]> {
+  findAll(): Promise<CarBrand[]> {
     return this.carBrandsService.findAll();
   }
 
   @Get(':id')
-  async findOne(@Param('id') id: number): Promise<CarBrand> {
+  findOne(@Param('id') id: string): Promise<CarBrand> {
     return this.carBrandsService.findOne(id);
   }
 
   @Post()
-  async create(@Body() carBrand: CarBrand): Promise<CarBrand> {
+  create(@Body() carBrand: CarBrand): Promise<CarBrand> {
     return this.carBrandsService.create(carBrand);
   }
 
   @Put(':id')
-  async update(
-    @Param('id') id: number,
+  update(
+    @Param('id') id: string,
     @Body() carBrand: CarBrand,
   ): Promise<CarBrand> {
     return this.carBrandsService.update(id, carBrand);
   }
 
   @Delete(':id')
-  async remove(@Param('id') id: number): Promise<void> {
+  remove(@Param('id') id: string): Promise<void> {
     return this.carBrandsService.remove(id);
   }
 }

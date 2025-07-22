@@ -4,9 +4,9 @@ import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 @Entity('car_brands')
 export class CarBrand {
   @PrimaryGeneratedColumn('uuid')
-  id: number;
+  id: string;
 
-  @Column()
+  @Column({ unique: true })
   name: string;
 
   @OneToMany(() => Car, (car) => car.brand)

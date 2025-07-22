@@ -9,7 +9,9 @@ describe('CarTransmissionsController', () => {
       controllers: [CarTransmissionsController],
     }).compile();
 
-    controller = module.get<CarTransmissionsController>(CarTransmissionsController);
+    controller = module.get<CarTransmissionsController>(
+      CarTransmissionsController,
+    );
   });
 
   it('should be defined', () => {

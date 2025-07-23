@@ -1,9 +1,10 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Car } from '@/cars/entities/car.entity';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity('users')
 export class User {
   @PrimaryGeneratedColumn('uuid')
-  id: number;
+  id: string;
 
   @Column()
   firstName: string;
@@ -19,4 +20,10 @@ export class User {
 
   @Column()
   role: string;
+
+  @OneToMany(() => Car, (car) => car.createdBy)
+  createdCars: Car[];
+
+  @OneToMany(() => Car, (car) => car.updatedBy)
+  updatedCars: Car[];
 }

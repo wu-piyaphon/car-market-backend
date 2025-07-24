@@ -1,18 +1,19 @@
+import { AuthModule } from '@/auth/auth.module';
+import { CarBrandsModule } from '@/car-brands/car-brands.module';
+import { CarCategoriesModule } from '@/car-categories/car-categories.module';
+import { CarTransmissionsModule } from '@/car-transmissions/car-transmissions.module';
+import { CarTypesModule } from '@/car-types/car-types.module';
+import { CarsModule } from '@/cars/cars.module';
+import { CommonModule } from '@/common/common.module';
+import { EstimateRequestsModule } from '@/estimate-requests/estimate-requests.module';
+import { SellingRequestsModule } from '@/selling-requests/selling-requests.module';
+import { UsersModule } from '@/users/users.module';
 import { Module } from '@nestjs/common';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AppConfig, DatabaseConfig } from './config';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { UsersModule } from '@/users/users.module';
-import { AuthModule } from '@/auth/auth.module';
-import { CarsModule } from '@/cars/cars.module';
-import { CarBrandsModule } from '@/car-brands/car-brands.module';
-import { CarTransmissionsModule } from '@/car-transmissions/car-transmissions.module';
-import { CarCategoriesModule } from '@/car-categories/car-categories.module';
-import { CarTypesModule } from '@/car-types/car-types.module';
-import { SellingRequestsModule } from '@/selling-requests/selling-requests.module';
-import { EstimateRequestsModule } from '@/estimate-requests/estimate-requests.module';
 
 @Module({
   imports: [
@@ -38,6 +39,7 @@ import { EstimateRequestsModule } from '@/estimate-requests/estimate-requests.mo
     CarTransmissionsModule,
     SellingRequestsModule,
     EstimateRequestsModule,
+    CommonModule,
   ],
   controllers: [AppController],
   providers: [AppService],

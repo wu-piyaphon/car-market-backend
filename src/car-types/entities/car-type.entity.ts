@@ -9,6 +9,6 @@ export class CarType {
   @Column({ unique: true })
   name: string;
 
-  @OneToMany(() => Car, (car) => car.carType)
+  @OneToMany(() => Car, (car) => car.type)
   cars: Car[];
 }

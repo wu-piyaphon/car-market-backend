@@ -11,7 +11,6 @@ import {
   UploadedFiles,
   UseGuards,
   UseInterceptors,
-  UsePipes,
 } from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
 
@@ -22,10 +21,9 @@ export class CarsController {
   @Post()
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(FilesInterceptor('files'))
-  @UsePipes(ImageFileValidationPipe)
   create(
     @Body() createCarDto: CreateCarDto,
-    @UploadedFiles()
+    @UploadedFiles(ImageFileValidationPipe)
     files: Express.Multer.File[],
     @User() user: UserPayload,
   ) {

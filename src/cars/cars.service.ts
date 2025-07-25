@@ -3,6 +3,7 @@ import { Car } from '@/cars/entities/car.entity';
 import { AwsS3Service } from '@/common/aws-s3.service';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { v4 as uuidv4 } from 'uuid';
 import { Repository } from 'typeorm';
 
 @Injectable()
@@ -18,14 +19,20 @@ export class CarsService {
     files: Express.Multer.File[],
     userId: string,
   ) {
+    const datePrefix = new Date().toISOString().split('T')[0];
+
     const images = await Promise.all(
       files.map((file) =>
-        this.awsS3Service.uploadFile(file, file.originalname),
+        this.awsS3Service.uploadFile(
+          file,
+          `cars/${datePrefix}/${uuidv4()}-${file.originalname}`,
+        ),
       ),
     );
 
     const createdCar = this.carsRepository.create({
       ...car,
+      images,
       brand: {
         id: car.brandId,
       },
@@ -38,13 +45,9 @@ export class CarsService {
       category: {
         id: car.categoryId,
       },
-      images,
-      createdAt: new Date(),
-      updatedAt: null,
       createdBy: {
         id: userId,
       },
-      updatedBy: null,
     });
 
     return this.carsRepository.save(createdCar);

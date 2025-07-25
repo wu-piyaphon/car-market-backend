@@ -1,3 +1,4 @@
+import { Type } from 'class-transformer';
 import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class CreateCarDto {
@@ -10,6 +11,14 @@ export class CreateCarDto {
   brandId: string;
 
   @IsString()
+  @IsOptional()
+  categoryId: string | null;
+
+  @IsString()
+  @IsNotEmpty()
+  transmissionId: string;
+
+  @IsString()
   @IsNotEmpty()
   model: string;
 
@@ -17,6 +26,7 @@ export class CreateCarDto {
   @IsNotEmpty()
   subModel: string;
 
+  @Type(() => Number)
   @IsNumber()
   @IsNotEmpty()
   modelYear: number;
@@ -27,20 +37,19 @@ export class CreateCarDto {
 
   @IsString()
   @IsNotEmpty()
-  transmissionId: string;
-
-  @IsString()
-  @IsNotEmpty()
   engineType: string;
 
+  @Type(() => Number)
   @IsNumber()
   @IsNotEmpty()
   engineCapacity: number;
 
+  @Type(() => Number)
   @IsNumber()
-  @IsNotEmpty()
+  @IsOptional()
   mileage: number;
 
+  @Type(() => Number)
   @IsNumber()
   @IsNotEmpty()
   price: number;
@@ -52,8 +61,4 @@ export class CreateCarDto {
   @IsString()
   @IsNotEmpty()
   currentLicensePlate: string;
-
-  @IsString()
-  @IsNotEmpty()
-  categoryId: string;
 }

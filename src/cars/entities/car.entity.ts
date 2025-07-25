@@ -5,10 +5,12 @@ import { CarType } from '@/car-types/entities/car-type.entity';
 import { User } from '@/users/user.entity';
 import {
   Column,
+  CreateDateColumn,
   Entity,
   JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 
 @Entity('cars')
@@ -34,10 +36,10 @@ export class Car {
   @Column()
   engineCapacity: number;
 
-  @Column()
+  @Column({ nullable: true })
   mileage: number;
 
-  @Column({ type: 'decimal', precision: 2, scale: 2 })
+  @Column({ type: 'decimal', precision: 10, scale: 2 })
   price: number;
 
   @Column('text', { array: true })
@@ -49,10 +51,10 @@ export class Car {
   @Column()
   currentLicensePlate: string;
 
-  @Column()
+  @CreateDateColumn({ type: 'timestamp' })
   createdAt: Date;
 
-  @Column()
+  @UpdateDateColumn({ type: 'timestamp' })
   updatedAt: Date;
 
   @ManyToOne(() => User, (user) => user.createdCars, { nullable: true })
@@ -77,7 +79,10 @@ export class Car {
   @JoinColumn({ name: 'car_transmission_id' })
   transmission: CarTransmission;
 
-  @ManyToOne(() => CarCategory, (category) => category.cars, { eager: true })
+  @ManyToOne(() => CarCategory, (category) => category.cars, {
+    eager: true,
+    nullable: true,
+  })
   @JoinColumn({ name: 'car_category_id' })
-  category: CarCategory;
+  category: CarCategory | null;
 }

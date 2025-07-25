@@ -5,6 +5,7 @@ import { Role } from '@/common/enums/role.enum';
 import { UsersService } from '@/users/users.service';
 import { SignUpDto } from '@/auth/dto/sign-up.dto';
 import { SignInDto } from '@/auth/dto/sign-in.dto';
+import { JwtPayload } from '@/common/interfaces/jwt-payload.interface';
 
 @Injectable()
 export class AuthService {
@@ -26,11 +27,10 @@ export class AuthService {
       throw new BadRequestException('Invalid credentials');
     }
 
+    const payload: JwtPayload = { id: foundUser.id, email };
+
     return {
-      access_token: await this.jwtService.signAsync({
-        sub: foundUser.id,
-        email,
-      }),
+      access_token: await this.jwtService.signAsync(payload),
     };
   }
 
@@ -50,7 +50,7 @@ export class AuthService {
       role: Role.ADMIN,
     });
 
-    const payload = { sub: user.id, email };
+    const payload: JwtPayload = { id: user.id, email };
 
     return {
       access_token: await this.jwtService.signAsync(payload),

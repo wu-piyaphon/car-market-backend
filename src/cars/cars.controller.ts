@@ -7,7 +7,12 @@ import { ImageFileValidationPipe } from '@/common/pipes/file-validation.presets'
 import {
   Body,
   Controller,
+  Delete,
+  Get,
+  Param,
+  ParseIntPipe,
   Post,
+  Query,
   UploadedFiles,
   UseGuards,
   UseInterceptors,
@@ -29,5 +34,24 @@ export class CarsController {
   ) {
     const userId = user.id;
     return this.carsService.create(createCarDto, files, userId);
+  }
+
+  @Get()
+  findAll(
+    @Query('page', ParseIntPipe) page: number = 1,
+    @Query('pageSize', ParseIntPipe) pageSize: number = 10,
+  ) {
+    return this.carsService.findAll(page, pageSize);
+  }
+
+  @Get(':id')
+  findOne(@Param('id') id: string) {
+    return this.carsService.findOne(id);
+  }
+
+  @Delete(':id')
+  @UseGuards(JwtAuthGuard)
+  delete(@Param('id') id: string) {
+    return this.carsService.delete(id);
   }
 }

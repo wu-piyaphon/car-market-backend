@@ -193,7 +193,6 @@ export class CarsService {
   async update(carId: string, updateCarDto: UpdateCarDto, userId: string) {
     const existingCar = await this.findOneById(carId);
     const updatedCar = this.carsRepository.merge(existingCar, updateCarDto);
-    console.log('🚀 ~ CarsService ~ update ~ updatedCar:', updatedCar);
     return this.carsRepository.save({
       ...updatedCar,
       updatedBy: {

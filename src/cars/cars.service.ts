@@ -1,6 +1,7 @@
 import { CarListQueryDto } from '@/cars/dtos/car-list-query.dto';
 import { CarListResponseDto } from '@/cars/dtos/car-list-response.dto';
 import { CreateCarDto } from '@/cars/dtos/create-car.dto';
+import { UpdateCarDto } from '@/cars/dtos/update-car.dto';
 import { Car } from '@/cars/entities/car.entity';
 import { AwsS3Service } from '@/common/aws-s3.service';
 import { PaginationResponseDto } from '@/common/dtos/pagination-response.dto';
@@ -116,7 +117,7 @@ export class CarsService {
     ];
 
     eqFilters.forEach(({ field, value, path }) => {
-      if (value !== undefined && value !== null) {
+      if (value) {
         qb.andWhere(`${path} = :${field}`, { [field]: value });
       }
     });
@@ -159,7 +160,14 @@ export class CarsService {
   async findOneById(carId: string) {
     const car = await this.carsRepository.findOne({
       where: { id: carId },
-      relations: ['brand', 'type', 'transmission', 'category', 'createdBy'],
+      relations: [
+        'brand',
+        'type',
+        'transmission',
+        'category',
+        'createdBy',
+        'updatedBy',
+      ],
     });
 
     if (!car) {
@@ -180,6 +188,18 @@ export class CarsService {
     }
 
     return car;
+  }
+
+  async update(carId: string, updateCarDto: UpdateCarDto, userId: string) {
+    const existingCar = await this.findOneById(carId);
+    const updatedCar = this.carsRepository.merge(existingCar, updateCarDto);
+    console.log('🚀 ~ CarsService ~ update ~ updatedCar:', updatedCar);
+    return this.carsRepository.save({
+      ...updatedCar,
+      updatedBy: {
+        id: userId,
+      },
+    });
   }
 
   async delete(carId: string) {

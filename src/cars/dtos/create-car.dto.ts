@@ -1,9 +1,10 @@
 import { EngineType } from '@/common/enums/engine-types.enum';
 import { SalesType } from '@/common/enums/sales-types.enum';
-import { toNumber } from '@/common/utils/transform.utils';
+import { toBoolean, toNumber } from '@/common/utils/transform.utils';
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
 import {
+  IsBoolean,
   IsEnum,
   IsNotEmpty,
   IsNumber,
@@ -90,4 +91,10 @@ export class CreateCarDto {
   @IsNotEmpty()
   @ApiProperty({ description: 'Car sales type', enum: SalesType })
   salesType: SalesType;
+
+  @IsBoolean()
+  @IsOptional()
+  @Transform(({ value }) => toBoolean(value))
+  @ApiProperty({ description: 'Car active status', default: true })
+  isActive?: boolean = true;
 }

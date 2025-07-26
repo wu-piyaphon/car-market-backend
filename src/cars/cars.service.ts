@@ -1,3 +1,4 @@
+import { CarBrandsService } from '@/car-brands/car-brands.service';
 import { CarListQueryDto } from '@/cars/dtos/car-list-query.dto';
 import { CarListResponseDto } from '@/cars/dtos/car-list-response.dto';
 import { CreateCarDto } from '@/cars/dtos/create-car.dto';
@@ -16,6 +17,7 @@ export class CarsService {
   constructor(
     @InjectRepository(Car)
     private carsRepository: Repository<Car>,
+    private carBrandsService: CarBrandsService,
     private awsS3Service: AwsS3Service,
   ) {}
 
@@ -24,7 +26,10 @@ export class CarsService {
     files: Express.Multer.File[],
     userId: string,
   ) {
-    const datePrefix = new Date().toISOString().split('T')[0];
+    const currentDate = new Date();
+    const datePrefix = currentDate.toISOString().split('T')[0];
+    const timestamp = currentDate.getTime();
+
     const images = await Promise.all(
       files.map((file) =>
         this.awsS3Service.uploadFile(
@@ -34,7 +39,8 @@ export class CarsService {
       ),
     );
 
-    const slug = generateCarSlug(car);
+    const brand = await this.carBrandsService.findOne(car.brandId);
+    const slug = generateCarSlug(brand.name, car, timestamp);
 
     const createdCar = this.carsRepository.create({
       ...car,

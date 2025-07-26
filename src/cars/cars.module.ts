@@ -4,9 +4,10 @@ import { CarsService } from './cars.service';
 import { Car } from '@/cars/entities/car.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { CommonModule } from '@/common/common.module';
+import { CarBrandsModule } from '@/car-brands/car-brands.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Car]), CommonModule],
+  imports: [TypeOrmModule.forFeature([Car]), CommonModule, CarBrandsModule],
   controllers: [CarsController],
   providers: [CarsService],
 })

@@ -8,5 +8,6 @@ import { CarBrand } from '@/car-brands/entities/car-brand.entity';
   imports: [TypeOrmModule.forFeature([CarBrand])],
   controllers: [CarBrandsController],
   providers: [CarBrandsService],
+  exports: [CarBrandsService],
 })
 export class CarBrandsModule {}

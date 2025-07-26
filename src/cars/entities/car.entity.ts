@@ -51,6 +51,9 @@ export class Car {
   @Column()
   currentLicensePlate: string;
 
+  @Column({ default: true })
+  isActive: boolean;
+
   @CreateDateColumn({ type: 'timestamp' })
   createdAt: Date;
 

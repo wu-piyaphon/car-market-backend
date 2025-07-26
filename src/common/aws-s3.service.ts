@@ -1,4 +1,9 @@
-import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
+import { extractS3KeyFromUrl } from '@/common/utils/s3.utils';
+import {
+  DeleteObjectsCommand,
+  PutObjectCommand,
+  S3Client,
+} from '@aws-sdk/client-s3';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
@@ -29,5 +34,15 @@ export class AwsS3Service {
     );
 
     return `https://${this.bucket}.s3.${this.configService.get('AWS_REGION')}.amazonaws.com/${key}`;
+  }
+
+  async deleteFile(urls: string[]) {
+    const keys = urls.map((url) => ({ Key: extractS3KeyFromUrl(url) }));
+    await this.s3.send(
+      new DeleteObjectsCommand({
+        Bucket: this.bucket,
+        Delete: { Objects: keys },
+      }),
+    );
   }
 }

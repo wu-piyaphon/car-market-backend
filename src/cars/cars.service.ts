@@ -1,12 +1,14 @@
+import { CarListQueryDto } from '@/cars/dtos/car-list-query.dto';
+import { CarListResponseDto } from '@/cars/dtos/car-list-response.dto';
 import { CreateCarDto } from '@/cars/dtos/create-car.dto';
 import { Car } from '@/cars/entities/car.entity';
 import { AwsS3Service } from '@/common/aws-s3.service';
+import { PaginationResponseDto } from '@/common/dtos/pagination-response.dto';
+import { generateCarSlug } from '@/common/utils/slug.utils';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { v4 as uuidv4 } from 'uuid';
 import { Repository } from 'typeorm';
-import { PaginationResponseDto } from '@/common/dtos/pagination-response.dto';
-import { CarListResponseDto } from '@/cars/dtos/car-list-response.dto';
+import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class CarsService {
@@ -22,7 +24,6 @@ export class CarsService {
     userId: string,
   ) {
     const datePrefix = new Date().toISOString().split('T')[0];
-
     const images = await Promise.all(
       files.map((file) =>
         this.awsS3Service.uploadFile(
@@ -32,9 +33,12 @@ export class CarsService {
       ),
     );
 
+    const slug = generateCarSlug(car);
+
     const createdCar = this.carsRepository.create({
       ...car,
       images,
+      slug,
       brand: {
         id: car.brandId,
       },
@@ -55,12 +59,94 @@ export class CarsService {
     return this.carsRepository.save(createdCar);
   }
 
-  async findAll(page: number, pageSize: number) {
-    const [cars, total] = await this.carsRepository.findAndCount({
-      relations: ['brand', 'type', 'transmission', 'category'],
-      skip: (page - 1) * pageSize,
-      take: pageSize,
+  async findAllPaginated(query: CarListQueryDto) {
+    const {
+      page = 1,
+      pageSize = 10,
+      type,
+      brand,
+      category,
+      transmission,
+      model,
+      subModel,
+      color,
+      modelYear,
+      engineType,
+      engineCapacity,
+      minMileage,
+      maxMileage,
+      minPrice,
+      maxPrice,
+      salesType,
+      isActive,
+      keyword,
+    } = query;
+
+    const qb = this.carsRepository
+      .createQueryBuilder('car')
+      .leftJoinAndSelect('car.brand', 'brand')
+      .leftJoinAndSelect('car.type', 'type')
+      .leftJoinAndSelect('car.transmission', 'transmission')
+      .leftJoinAndSelect('car.category', 'category')
+      .skip((page - 1) * pageSize)
+      .take(pageSize);
+
+    // Equality filters
+    const eqFilters = [
+      { field: 'type', value: type, path: 'car.type.id' },
+      { field: 'brand', value: brand, path: 'car.brand.id' },
+      { field: 'category', value: category, path: 'car.category.id' },
+      {
+        field: 'transmission',
+        value: transmission,
+        path: 'car.transmission.id',
+      },
+      { field: 'model', value: model, path: 'car.model' },
+      { field: 'subModel', value: subModel, path: 'car.subModel' },
+      { field: 'color', value: color, path: 'car.color' },
+      { field: 'modelYear', value: modelYear, path: 'car.modelYear' },
+      { field: 'engineType', value: engineType, path: 'car.engineType' },
+      {
+        field: 'engineCapacity',
+        value: engineCapacity,
+        path: 'car.engineCapacity',
+      },
+      { field: 'salesType', value: salesType, path: 'car.salesType' },
+      { field: 'isActive', value: isActive, path: 'car.isActive' },
+    ];
+
+    eqFilters.forEach(({ field, value, path }) => {
+      if (value !== undefined && value !== null) {
+        qb.andWhere(`${path} = :${field}`, { [field]: value });
+      }
     });
+
+    // Range filters
+    if (minMileage !== undefined || maxMileage !== undefined) {
+      qb.andWhere('car.mileage >= :minMileage', {
+        minMileage: minMileage ?? 0,
+      });
+      qb.andWhere('car.mileage <= :maxMileage', {
+        maxMileage: maxMileage ?? Number.MAX_SAFE_INTEGER,
+      });
+    }
+
+    if (minPrice !== undefined || maxPrice !== undefined) {
+      qb.andWhere('car.price >= :minPrice', { minPrice: minPrice ?? 0 });
+      qb.andWhere('car.price <= :maxPrice', {
+        maxPrice: maxPrice ?? Number.MAX_SAFE_INTEGER,
+      });
+    }
+
+    // Keyword filter
+    if (keyword) {
+      qb.andWhere(
+        '(car.model ILIKE :keyword OR car.subModel ILIKE :keyword OR car.modelYear ILIKE :keyword)',
+        { keyword: `%${keyword}%` },
+      );
+    }
+
+    const [cars, total] = await qb.getManyAndCount();
 
     return new PaginationResponseDto({
       items: cars.map((car) => new CarListResponseDto(car)),
@@ -70,11 +156,30 @@ export class CarsService {
     });
   }
 
-  async findOne(carId: string) {
-    return this.carsRepository.findOne({
+  async findOneById(carId: string) {
+    const car = await this.carsRepository.findOne({
       where: { id: carId },
+      relations: ['brand', 'type', 'transmission', 'category', 'createdBy'],
+    });
+
+    if (!car) {
+      throw new NotFoundException('Car not found');
+    }
+
+    return car;
+  }
+
+  async findOneBySlug(slug: string) {
+    const car = await this.carsRepository.findOne({
+      where: { slug, isActive: true },
       relations: ['brand', 'type', 'transmission', 'category'],
     });
+
+    if (!car) {
+      throw new NotFoundException('Car not found');
+    }
+
+    return car;
   }
 
   async delete(carId: string) {

@@ -2,6 +2,8 @@ import { CarBrand } from '@/car-brands/entities/car-brand.entity';
 import { CarCategory } from '@/car-categories/entities/car-category.entity';
 import { CarTransmission } from '@/car-transmissions/entities/car-transmission.entity';
 import { CarType } from '@/car-types/entities/car-type.entity';
+import { EngineType } from '@/common/enums/engine-types.enum';
+import { SalesType } from '@/common/enums/sales-types.enum';
 import { User } from '@/users/user.entity';
 import {
   Column,
@@ -18,6 +20,9 @@ export class Car {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
+  @Column({ unique: true })
+  slug: string;
+
   @Column()
   model: string;
 
@@ -30,8 +35,8 @@ export class Car {
   @Column()
   color: string;
 
-  @Column()
-  engineType: string;
+  @Column({ type: 'enum', enum: EngineType })
+  engineType: EngineType;
 
   @Column()
   engineCapacity: number;
@@ -53,6 +58,9 @@ export class Car {
 
   @Column({ default: true })
   isActive: boolean;
+
+  @Column({ type: 'enum', enum: SalesType })
+  salesType: SalesType;
 
   @CreateDateColumn({ type: 'timestamp' })
   createdAt: Date;

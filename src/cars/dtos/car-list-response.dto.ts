@@ -14,6 +14,7 @@ export class CarListResponseDto {
   previousLicensePlate: string;
   currentLicensePlate: string;
   isActive: boolean;
+  slug: string;
 
   constructor(car: Car) {
     this.id = car.id;
@@ -29,5 +30,6 @@ export class CarListResponseDto {
     this.previousLicensePlate = car.previousLicensePlate;
     this.currentLicensePlate = car.currentLicensePlate;
     this.isActive = car.isActive;
+    this.slug = car.slug;
   }
 }

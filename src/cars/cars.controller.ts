@@ -1,5 +1,6 @@
 import { JwtAuthGuard } from '@/auth/jwt-auth.guard';
 import { CarsService } from '@/cars/cars.service';
+import { CarListQueryDto } from '@/cars/dtos/car-list-query.dto';
 import { CreateCarDto } from '@/cars/dtos/create-car.dto';
 import { User } from '@/common/decorators/user.decorator';
 import { UserPayload } from '@/common/interfaces/user-payload.interface';
@@ -10,12 +11,12 @@ import {
   Delete,
   Get,
   Param,
-  ParseIntPipe,
   Post,
   Query,
   UploadedFiles,
   UseGuards,
   UseInterceptors,
+  ValidationPipe,
 } from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
 
@@ -38,15 +39,20 @@ export class CarsController {
 
   @Get()
   findAll(
-    @Query('page', ParseIntPipe) page: number = 1,
-    @Query('pageSize', ParseIntPipe) pageSize: number = 10,
+    @Query(new ValidationPipe({ transform: true })) query: CarListQueryDto,
   ) {
-    return this.carsService.findAll(page, pageSize);
+    return this.carsService.findAllPaginated(query);
   }
 
   @Get(':id')
+  @UseGuards(JwtAuthGuard)
   findOne(@Param('id') id: string) {
-    return this.carsService.findOne(id);
+    return this.carsService.findOneById(id);
+  }
+
+  @Get('slug/:slug')
+  findOneBySlug(@Param('slug') slug: string) {
+    return this.carsService.findOneBySlug(slug);
   }
 
   @Delete(':id')

@@ -1,12 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Car } from '../entities/car.entity';
 import { CarFilterQueryDto } from '../dtos/car-filter-query.dto';
-import {
-  CarFilterResponseDto,
-  FilterOption,
-} from '../dtos/car-filter-response.dto';
+import { CarFilterResponseDto } from '../dtos/car-filter-response.dto';
+import { Car } from '../entities/car.entity';
+
+type FilterQueryResult = {
+  value: string;
+  count: number;
+};
 
 @Injectable()
 export class CarFilterService {
@@ -57,15 +59,15 @@ export class CarFilterService {
       });
       const selectCols = [`${column} as value`, `COUNT(*) as count`];
 
-      const rows: FilterOption[] = await subQb
+      const rows: FilterQueryResult[] = await subQb
         .select(selectCols)
         .groupBy('value')
         .getRawMany();
       return rows
-        .filter((row: FilterOption) => row.value !== null)
-        .map((row: FilterOption) => ({
-          value: row.value,
-          count: row.count,
+        .filter((row: FilterQueryResult) => row.value !== null)
+        .map((row: FilterQueryResult) => ({
+          name: String(row.value),
+          count: Number(row.count),
         }));
     };
 

@@ -64,7 +64,6 @@ export class CarsController {
     @Body() updateCarDto: UpdateCarDto,
     @User() user: UserPayload,
   ) {
-    console.log({ updateCarDto });
     const userId = user.id;
     return this.carsService.update(id, updateCarDto, userId);
   }

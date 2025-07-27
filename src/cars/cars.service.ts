@@ -96,9 +96,9 @@ export class CarsService {
 
     // Equality filters
     const eqFilters = [
-      { field: 'type', value: type, path: 'car.type.id' },
-      { field: 'brand', value: brand, path: 'car.brand.id' },
-      { field: 'category', value: category, path: 'car.category.id' },
+      { field: 'type', value: type, path: 'type.name' },
+      { field: 'brand', value: brand, path: 'brand.name' },
+      { field: 'category', value: category, path: 'category.name' },
       { field: 'model', value: model, path: 'car.model' },
       { field: 'subModel', value: subModel, path: 'car.subModel' },
       { field: 'transmission', value: transmission, path: 'car.transmission' },

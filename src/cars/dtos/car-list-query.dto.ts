@@ -10,27 +10,23 @@ import {
   IsNumber,
   IsOptional,
   IsString,
-  IsUUID,
   Min,
 } from 'class-validator';
 
 export class CarListQueryDto {
   @IsOptional()
-  @IsUUID()
-  @Transform(({ value }) => (!value ? undefined : value))
-  @ApiPropertyOptional({ description: 'Car type UUID' })
+  @IsString()
+  @ApiPropertyOptional({ description: 'Car type name' })
   type?: string;
 
   @IsOptional()
-  @IsUUID()
-  @Transform(({ value }) => (!value ? undefined : value))
-  @ApiPropertyOptional({ description: 'Car brand UUID' })
+  @IsString()
+  @ApiPropertyOptional({ description: 'Car brand name' })
   brand?: string;
 
   @IsOptional()
-  @IsUUID()
-  @Transform(({ value }) => (!value ? undefined : value))
-  @ApiPropertyOptional({ description: 'Car category UUID' })
+  @IsString()
+  @ApiPropertyOptional({ description: 'Car category name' })
   category?: string;
 
   @IsOptional()

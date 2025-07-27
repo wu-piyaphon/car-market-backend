@@ -115,7 +115,7 @@ export class CarsService {
     ];
 
     eqFilters.forEach(({ field, value, path }) => {
-      if (value) {
+      if (!!value) {
         qb.andWhere(`${path} = :${field}`, { [field]: value });
       }
     });

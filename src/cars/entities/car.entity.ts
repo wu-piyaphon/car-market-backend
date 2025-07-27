@@ -1,9 +1,9 @@
 import { CarBrand } from '@/car-brands/entities/car-brand.entity';
 import { CarCategory } from '@/car-categories/entities/car-category.entity';
-import { CarTransmission } from '@/car-transmissions/entities/car-transmission.entity';
 import { CarType } from '@/car-types/entities/car-type.entity';
-import { EngineType } from '@/common/enums/engine-types.enum';
-import { SalesType } from '@/common/enums/sales-types.enum';
+import { EngineType } from '@/common/enums/engine-type.enum';
+import { SalesType } from '@/common/enums/sales-type.enum';
+import { Transmission } from '@/common/enums/transmission.enum';
 import { User } from '@/users/user.entity';
 import {
   Column,
@@ -31,6 +31,9 @@ export class Car {
 
   @Column({ name: 'model_year' })
   modelYear: number;
+
+  @Column({ type: 'enum', enum: Transmission })
+  transmission: Transmission;
 
   @Column()
   color: string;
@@ -83,12 +86,6 @@ export class Car {
   @ManyToOne(() => CarType, (carType) => carType.cars, { eager: true })
   @JoinColumn({ name: 'car_type_id' })
   type: CarType;
-
-  @ManyToOne(() => CarTransmission, (transmission) => transmission.cars, {
-    eager: true,
-  })
-  @JoinColumn({ name: 'car_transmission_id' })
-  transmission: CarTransmission;
 
   @ManyToOne(() => CarCategory, (category) => category.cars, {
     eager: true,

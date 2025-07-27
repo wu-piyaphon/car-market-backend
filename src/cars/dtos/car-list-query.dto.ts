@@ -1,5 +1,6 @@
-import { EngineType } from '@/common/enums/engine-types.enum';
-import { SalesType } from '@/common/enums/sales-types.enum';
+import { EngineType } from '@/common/enums/engine-type.enum';
+import { SalesType } from '@/common/enums/sales-type.enum';
+import { Transmission } from '@/common/enums/transmission.enum';
 import { toBoolean, toNumber } from '@/common/utils/transform.utils';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
@@ -29,12 +30,6 @@ export class CarListQueryDto {
   @IsOptional()
   @IsUUID()
   @Transform(({ value }) => (!value ? undefined : value))
-  @ApiPropertyOptional({ description: 'Car transmission UUID' })
-  transmission?: string;
-
-  @IsOptional()
-  @IsUUID()
-  @Transform(({ value }) => (!value ? undefined : value))
   @ApiPropertyOptional({ description: 'Car category UUID' })
   category?: string;
 
@@ -47,6 +42,12 @@ export class CarListQueryDto {
   @IsString()
   @ApiPropertyOptional({ description: 'Car sub model' })
   subModel?: string;
+
+  @IsOptional()
+  @IsEnum(EngineType)
+  @Transform(({ value }) => (!value ? undefined : value))
+  @ApiPropertyOptional({ description: 'Car transmission', enum: Transmission })
+  transmission?: Transmission;
 
   @IsOptional()
   @IsString()

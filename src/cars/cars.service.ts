@@ -52,9 +52,6 @@ export class CarsService {
       type: {
         id: car.typeId,
       },
-      transmission: {
-        id: car.transmissionId,
-      },
       category: {
         id: car.categoryId,
       },
@@ -93,7 +90,6 @@ export class CarsService {
       .createQueryBuilder('car')
       .leftJoinAndSelect('car.brand', 'brand')
       .leftJoinAndSelect('car.type', 'type')
-      .leftJoinAndSelect('car.transmission', 'transmission')
       .leftJoinAndSelect('car.category', 'category')
       .skip((page - 1) * pageSize)
       .take(pageSize);
@@ -103,13 +99,9 @@ export class CarsService {
       { field: 'type', value: type, path: 'car.type.id' },
       { field: 'brand', value: brand, path: 'car.brand.id' },
       { field: 'category', value: category, path: 'car.category.id' },
-      {
-        field: 'transmission',
-        value: transmission,
-        path: 'car.transmission.id',
-      },
       { field: 'model', value: model, path: 'car.model' },
       { field: 'subModel', value: subModel, path: 'car.subModel' },
+      { field: 'transmission', value: transmission, path: 'car.transmission' },
       { field: 'color', value: color, path: 'car.color' },
       { field: 'modelYear', value: modelYear, path: 'car.modelYear' },
       { field: 'engineType', value: engineType, path: 'car.engineType' },
@@ -166,14 +158,7 @@ export class CarsService {
   async findOneById(carId: string) {
     const car = await this.carsRepository.findOne({
       where: { id: carId },
-      relations: [
-        'brand',
-        'type',
-        'transmission',
-        'category',
-        'createdBy',
-        'updatedBy',
-      ],
+      relations: ['brand', 'type', 'category', 'createdBy', 'updatedBy'],
     });
 
     if (!car) {
@@ -186,7 +171,7 @@ export class CarsService {
   async findOneBySlug(slug: string) {
     const car = await this.carsRepository.findOne({
       where: { slug, isActive: true },
-      relations: ['brand', 'type', 'transmission', 'category'],
+      relations: ['brand', 'type', 'category'],
     });
 
     if (!car) {

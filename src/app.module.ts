@@ -1,7 +1,6 @@
 import { AuthModule } from '@/auth/auth.module';
 import { CarBrandsModule } from '@/car-brands/car-brands.module';
 import { CarCategoriesModule } from '@/car-categories/car-categories.module';
-import { CarTransmissionsModule } from '@/car-transmissions/car-transmissions.module';
 import { CarTypesModule } from '@/car-types/car-types.module';
 import { CarsModule } from '@/cars/cars.module';
 import { CommonModule } from '@/common/common.module';
@@ -32,11 +31,9 @@ import { AppConfig, DatabaseConfig } from './config';
     AuthModule,
     CarsModule,
     CarBrandsModule,
-    CarTransmissionsModule,
     CarCategoriesModule,
     CarTypesModule,
     CarBrandsModule,
-    CarTransmissionsModule,
     SellingRequestsModule,
     EstimateRequestsModule,
     CommonModule,

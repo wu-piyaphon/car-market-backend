@@ -1,5 +1,6 @@
-import { EngineType } from '@/common/enums/engine-types.enum';
-import { SalesType } from '@/common/enums/sales-types.enum';
+import { EngineType } from '@/common/enums/engine-type.enum';
+import { SalesType } from '@/common/enums/sales-type.enum';
+import { Transmission } from '@/common/enums/transmission.enum';
 import { toBoolean, toNumber } from '@/common/utils/transform.utils';
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
@@ -30,11 +31,6 @@ export class CreateCarDto {
 
   @IsString()
   @IsNotEmpty()
-  @ApiProperty({ description: 'Car transmission UUID' })
-  transmissionId: string;
-
-  @IsString()
-  @IsNotEmpty()
   @ApiProperty({ description: 'Car model' })
   model: string;
 
@@ -42,6 +38,11 @@ export class CreateCarDto {
   @IsNotEmpty()
   @ApiProperty({ description: 'Car sub model' })
   subModel: string;
+
+  @IsEnum(Transmission)
+  @IsNotEmpty()
+  @ApiProperty({ description: 'Car transmission', enum: Transmission })
+  transmission: Transmission;
 
   @IsNumber()
   @IsNotEmpty()

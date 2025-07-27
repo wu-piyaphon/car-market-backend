@@ -16,13 +16,6 @@ export class CarFilterService {
   ) {}
 
   async getFilters(query: CarFilterQueryDto): Promise<CarFilterResponseDto> {
-    // Build base query with filters
-    const qb = this.carsRepository.createQueryBuilder('car');
-    qb.leftJoin('car.brand', 'brand');
-    qb.leftJoin('car.type', 'type');
-    qb.leftJoin('car.category', 'category');
-
-    // Apply filters from query
     const eqFilters = [
       { field: 'type', value: query.type, path: 'type.name' },
       { field: 'brand', value: query.brand, path: 'brand.name' },
@@ -43,13 +36,14 @@ export class CarFilterService {
         path: 'car.engineCapacity',
       },
     ];
-    eqFilters.forEach(({ field, value, path }) => {
-      if (!!value) {
-        qb.andWhere(`${path} = :${field}`, { [field]: value });
-      }
-    });
 
-    // Helper to get distinct values and counts for a column
+    /*
+     * Helper to get distinct values and counts for a column
+     * This approach goes through 9 round-trips to the database
+     *
+     * Optimize attempt 1: Used raw SQL with UNION ALL to combine the queries and use a single round-trip,
+     * but didn't work because each filter must be self-exclusion (not filtering itself)
+     */
     const getDistinctWithCount = async (column: string) => {
       const subQb = this.carsRepository.createQueryBuilder('car');
       subQb.leftJoin('car.brand', 'brand');

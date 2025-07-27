@@ -26,7 +26,7 @@ export class Car {
   @Column()
   model: string;
 
-  @Column()
+  @Column({ name: 'sub_model' })
   subModel: string;
 
   @Column({ name: 'model_year' })
@@ -38,10 +38,10 @@ export class Car {
   @Column()
   color: string;
 
-  @Column({ type: 'enum', enum: EngineType })
+  @Column({ name: 'engine_type', type: 'enum', enum: EngineType })
   engineType: EngineType;
 
-  @Column()
+  @Column({ name: 'engine_capacity' })
   engineCapacity: number;
 
   @Column({ nullable: true })

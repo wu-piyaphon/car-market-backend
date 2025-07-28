@@ -6,6 +6,9 @@ export class CarType {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
+  @Column()
+  image: string;
+
   @Column({ unique: true })
   name: string;
 

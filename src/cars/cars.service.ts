@@ -6,12 +6,11 @@ import { UpdateCarDto } from '@/cars/dtos/update-car.dto';
 import { Car } from '@/cars/entities/car.entity';
 import { AwsS3Service } from '@/common/aws-s3.service';
 import { PaginationResponseDto } from '@/common/dtos/pagination-response.dto';
-import { getCurrentDatePrefix, getTimestamp } from '@/common/utils/date.utilts';
+import { getTimestamp } from '@/common/utils/date.utils';
 import { generateCarSlug } from '@/common/utils/slug.utils';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class CarsService {
@@ -27,16 +26,10 @@ export class CarsService {
     files: Express.Multer.File[],
     userId: string,
   ) {
-    const datePrefix = getCurrentDatePrefix();
     const timestamp = getTimestamp();
 
     const images = await Promise.all(
-      files.map((file) =>
-        this.awsS3Service.uploadFile(
-          file,
-          `cars/${datePrefix}/${uuidv4()}-${file.originalname}`,
-        ),
-      ),
+      files.map((file) => this.awsS3Service.uploadFile(file, 'cars')),
     );
 
     const brand = await this.carBrandsService.findOne(car.brandId);
@@ -195,14 +188,8 @@ export class CarsService {
       await this.awsS3Service.deleteFile(oldImages);
     }
 
-    const datePrefix = getCurrentDatePrefix();
     const images = await Promise.all(
-      files.map((image) =>
-        this.awsS3Service.uploadFile(
-          image,
-          `cars/${datePrefix}/${uuidv4()}-${image.originalname}`,
-        ),
-      ),
+      files.map((image) => this.awsS3Service.uploadFile(image, 'cars')),
     );
 
     const updatedCar = this.carsRepository.merge(existingCar, {

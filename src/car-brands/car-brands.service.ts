@@ -8,9 +8,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { v4 as uuidv4 } from 'uuid';
 import { Repository } from 'typeorm';
-import { getCurrentDatePrefix } from '@/common/utils/date.utilts';
 
 @Injectable()
 export class CarBrandsService {
@@ -36,11 +34,7 @@ export class CarBrandsService {
     createCarBrandDto: CreateCarBrandDto,
     file: Express.Multer.File,
   ): Promise<CarBrand> {
-    const datePrefix = getCurrentDatePrefix();
-    const image = await this.awsS3Service.uploadFile(
-      file,
-      `car-brands/${datePrefix}/${uuidv4()}-${file.originalname}`,
-    );
+    const image = await this.awsS3Service.uploadFile(file, 'car-brands');
 
     const brand = this.carBrandRepository.create({
       ...createCarBrandDto,
@@ -62,18 +56,11 @@ export class CarBrandsService {
     file: Express.Multer.File,
   ): Promise<CarBrand> {
     const existingBrand = await this.findOne(id);
-    const datePrefix = getCurrentDatePrefix();
-    if (file) {
-      const oldImage = existingBrand.image;
-      if (oldImage) {
-        await this.awsS3Service.deleteFile(oldImage);
-      }
 
-      const image = await this.awsS3Service.uploadFile(
-        file,
-        `car-brands/${datePrefix}/${uuidv4()}-${file.originalname}`,
-      );
-      existingBrand.image = image;
+    if (file) {
+      await this.awsS3Service.deleteFile(existingBrand.image);
+      const newImage = await this.awsS3Service.uploadFile(file, 'car-brands');
+      existingBrand.image = newImage;
     }
 
     this.carBrandRepository.merge(existingBrand, updateCarBrandDto);

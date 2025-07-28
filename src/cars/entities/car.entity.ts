@@ -53,22 +53,22 @@ export class Car {
   @Column('text', { array: true })
   images: string[];
 
-  @Column()
+  @Column({ name: 'previous_license_plate' })
   previousLicensePlate: string;
 
-  @Column()
+  @Column({ name: 'current_license_plate' })
   currentLicensePlate: string;
 
-  @Column({ default: true })
+  @Column({ name: 'is_active', default: true })
   isActive: boolean;
 
-  @Column({ type: 'enum', enum: SalesType })
+  @Column({ name: 'sales_type', type: 'enum', enum: SalesType })
   salesType: SalesType;
 
-  @CreateDateColumn({ type: 'timestamp' })
+  @CreateDateColumn({ name: 'created_at', type: 'timestamp' })
   createdAt: Date;
 
-  @UpdateDateColumn({ type: 'timestamp' })
+  @UpdateDateColumn({ name: 'updated_at', type: 'timestamp' })
   updatedAt: Date;
 
   @ManyToOne(() => User, (user) => user.createdCars, { nullable: true })

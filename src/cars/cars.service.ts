@@ -100,18 +100,18 @@ export class CarsService {
       { field: 'brand', value: brand, path: 'brand.name' },
       { field: 'category', value: category, path: 'category.name' },
       { field: 'model', value: model, path: 'car.model' },
-      { field: 'subModel', value: subModel, path: 'car.subModel' },
+      { field: 'subModel', value: subModel, path: 'car.sub_model' },
       { field: 'transmission', value: transmission, path: 'car.transmission' },
       { field: 'color', value: color, path: 'car.color' },
-      { field: 'modelYear', value: modelYear, path: 'car.modelYear' },
-      { field: 'engineType', value: engineType, path: 'car.engineType' },
+      { field: 'modelYear', value: modelYear, path: 'car.model_year' },
+      { field: 'engineType', value: engineType, path: 'car.engine_type' },
       {
         field: 'engineCapacity',
         value: engineCapacity,
-        path: 'car.engineCapacity',
+        path: 'car.engine_capacity',
       },
-      { field: 'salesType', value: salesType, path: 'car.salesType' },
-      { field: 'isActive', value: isActive, path: 'car.isActive' },
+      { field: 'salesType', value: salesType, path: 'car.sales_type' },
+      { field: 'isActive', value: isActive, path: 'car.is_active' },
     ];
 
     eqFilters.forEach(({ field, value, path }) => {
@@ -139,9 +139,10 @@ export class CarsService {
 
     // Keyword filter
     if (keyword) {
+      const keywordLower = keyword.toLowerCase();
       qb.andWhere(
-        '(car.model ILIKE :keyword OR car.subModel ILIKE :keyword OR car.modelYear ILIKE :keyword)',
-        { keyword: `%${keyword}%` },
+        '(LOWER(car.model) ILIKE :keyword OR LOWER(car.sub_model) ILIKE :keyword)',
+        { keyword: `%${keywordLower}%` },
       );
     }
 

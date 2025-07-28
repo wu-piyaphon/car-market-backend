@@ -11,20 +11,21 @@ import {
   IsNumber,
   IsOptional,
   IsString,
+  IsUUID,
 } from 'class-validator';
 
 export class CreateCarDto {
-  @IsString()
+  @IsUUID()
   @IsNotEmpty()
   @ApiProperty({ description: 'Car type UUID' })
   typeId: string;
 
-  @IsString()
+  @IsUUID()
   @IsNotEmpty()
   @ApiProperty({ description: 'Car brand UUID' })
   brandId: string;
 
-  @IsString()
+  @IsUUID()
   @IsOptional()
   @ApiProperty({ description: 'Car category UUID' })
   categoryId: string | null;

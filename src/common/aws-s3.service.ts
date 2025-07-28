@@ -36,8 +36,10 @@ export class AwsS3Service {
     return `https://${this.bucket}.s3.${this.configService.get('AWS_REGION')}.amazonaws.com/${key}`;
   }
 
-  async deleteFile(urls: string[]) {
-    const keys = urls.map((url) => ({ Key: extractS3KeyFromUrl(url) }));
+  async deleteFile(urls: string[] | string) {
+    const urlsArray = Array.isArray(urls) ? urls : [urls];
+
+    const keys = urlsArray.map((url) => ({ Key: extractS3KeyFromUrl(url) }));
     await this.s3.send(
       new DeleteObjectsCommand({
         Bucket: this.bucket,

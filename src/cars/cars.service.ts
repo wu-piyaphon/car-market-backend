@@ -6,6 +6,7 @@ import { UpdateCarDto } from '@/cars/dtos/update-car.dto';
 import { Car } from '@/cars/entities/car.entity';
 import { AwsS3Service } from '@/common/aws-s3.service';
 import { PaginationResponseDto } from '@/common/dtos/pagination-response.dto';
+import { getCurrentDatePrefix, getTimestamp } from '@/common/utils/date.utilts';
 import { generateCarSlug } from '@/common/utils/slug.utils';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -26,9 +27,8 @@ export class CarsService {
     files: Express.Multer.File[],
     userId: string,
   ) {
-    const currentDate = new Date();
-    const datePrefix = currentDate.toISOString().split('T')[0];
-    const timestamp = currentDate.getTime();
+    const datePrefix = getCurrentDatePrefix();
+    const timestamp = getTimestamp();
 
     const images = await Promise.all(
       files.map((file) =>

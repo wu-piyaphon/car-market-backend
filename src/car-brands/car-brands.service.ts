@@ -1,19 +1,23 @@
 import { CreateCarBrandDto } from '@/car-brands/dtos/create-car-brand.dto';
 import { UpdateCarBrandDto } from '@/car-brands/dtos/update-car-brand.dto';
 import { CarBrand } from '@/car-brands/entities/car-brand.entity';
+import { AwsS3Service } from '@/common/aws-s3.service';
 import {
   BadRequestException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { v4 as uuidv4 } from 'uuid';
 import { Repository } from 'typeorm';
+import { getCurrentDatePrefix } from '@/common/utils/date.utilts';
 
 @Injectable()
 export class CarBrandsService {
   constructor(
     @InjectRepository(CarBrand)
     private readonly carBrandRepository: Repository<CarBrand>,
+    private readonly awsS3Service: AwsS3Service,
   ) {}
 
   async findAll(): Promise<CarBrand[]> {
@@ -28,8 +32,20 @@ export class CarBrandsService {
     return brand;
   }
 
-  async create(createCarBrandDto: CreateCarBrandDto): Promise<CarBrand> {
-    const brand = this.carBrandRepository.create(createCarBrandDto);
+  async create(
+    createCarBrandDto: CreateCarBrandDto,
+    file: Express.Multer.File,
+  ): Promise<CarBrand> {
+    const datePrefix = getCurrentDatePrefix();
+    const image = await this.awsS3Service.uploadFile(
+      file,
+      `car-brands/${datePrefix}/${uuidv4()}-${file.originalname}`,
+    );
+
+    const brand = this.carBrandRepository.create({
+      ...createCarBrandDto,
+      image,
+    });
     try {
       return await this.carBrandRepository.save(brand);
     } catch (error) {
@@ -43,8 +59,23 @@ export class CarBrandsService {
   async update(
     id: string,
     updateCarBrandDto: UpdateCarBrandDto,
+    file: Express.Multer.File,
   ): Promise<CarBrand> {
     const existingBrand = await this.findOne(id);
+    const datePrefix = getCurrentDatePrefix();
+    if (file) {
+      const oldImage = existingBrand.image;
+      if (oldImage) {
+        await this.awsS3Service.deleteFile(oldImage);
+      }
+
+      const image = await this.awsS3Service.uploadFile(
+        file,
+        `car-brands/${datePrefix}/${uuidv4()}-${file.originalname}`,
+      );
+      existingBrand.image = image;
+    }
+
     this.carBrandRepository.merge(existingBrand, updateCarBrandDto);
     try {
       return await this.carBrandRepository.save(existingBrand);

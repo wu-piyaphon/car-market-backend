@@ -1,5 +1,9 @@
+import { JwtAuthGuard } from '@/auth/jwt-auth.guard';
 import { CarBrandsService } from '@/car-brands/car-brands.service';
+import { CreateCarBrandDto } from '@/car-brands/dtos/create-car-brand.dto';
+import { UpdateCarBrandDto } from '@/car-brands/dtos/update-car-brand.dto';
 import { CarBrand } from '@/car-brands/entities/car-brand.entity';
+import { ImageFileValidationPipe } from '@/common/pipes/file-validation.presets';
 import {
   Body,
   Controller,
@@ -8,8 +12,13 @@ import {
   Param,
   Post,
   Put,
+  UploadedFile,
+  UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 
+@UseGuards(JwtAuthGuard)
 @Controller('car-brands')
 export class CarBrandsController {
   constructor(private readonly carBrandsService: CarBrandsService) {}
@@ -25,16 +34,22 @@ export class CarBrandsController {
   }
 
   @Post()
-  create(@Body() carBrand: CarBrand): Promise<CarBrand> {
-    return this.carBrandsService.create(carBrand);
+  @UseInterceptors(FileInterceptor('file'))
+  create(
+    @Body() createCarBrandDto: CreateCarBrandDto,
+    @UploadedFile(ImageFileValidationPipe) file: Express.Multer.File,
+  ): Promise<CarBrand> {
+    return this.carBrandsService.create(createCarBrandDto, file);
   }
 
   @Put(':id')
+  @UseInterceptors(FileInterceptor('file'))
   update(
     @Param('id') id: string,
-    @Body() carBrand: CarBrand,
+    @Body() updateCarBrandDto: UpdateCarBrandDto,
+    @UploadedFile(ImageFileValidationPipe) file: Express.Multer.File,
   ): Promise<CarBrand> {
-    return this.carBrandsService.update(id, carBrand);
+    return this.carBrandsService.update(id, updateCarBrandDto, file);
   }
 
   @Delete(':id')

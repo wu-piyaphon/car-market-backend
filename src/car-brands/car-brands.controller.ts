@@ -3,7 +3,10 @@ import { CarBrandsService } from '@/car-brands/car-brands.service';
 import { CreateCarBrandDto } from '@/car-brands/dtos/create-car-brand.dto';
 import { UpdateCarBrandDto } from '@/car-brands/dtos/update-car-brand.dto';
 import { CarBrand } from '@/car-brands/entities/car-brand.entity';
-import { ImageFileValidationPipe } from '@/common/pipes/file-validation.presets';
+import {
+  ImageFileValidationPipe,
+  OptionalImageFileValidationPipe,
+} from '@/common/pipes/file-validation.presets';
 import {
   Body,
   Controller,
@@ -47,7 +50,7 @@ export class CarBrandsController {
   update(
     @Param('id') id: string,
     @Body() updateCarBrandDto: UpdateCarBrandDto,
-    @UploadedFile(ImageFileValidationPipe) file: Express.Multer.File,
+    @UploadedFile(OptionalImageFileValidationPipe) file: Express.Multer.File,
   ): Promise<CarBrand> {
     return this.carBrandsService.update(id, updateCarBrandDto, file);
   }

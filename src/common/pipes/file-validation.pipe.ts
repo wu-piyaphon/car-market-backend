@@ -3,6 +3,7 @@ import { BadRequestException, Injectable, PipeTransform } from '@nestjs/common';
 interface FileValidationOptions {
   maxSize: number;
   allowedMimeTypes: string[];
+  optional?: boolean;
 }
 
 @Injectable()
@@ -13,7 +14,11 @@ export class FileValidationPipe implements PipeTransform {
     const files = Array.isArray(value) ? value : [value];
 
     if (!files || files.length === 0 || !files[0]) {
-      throw new BadRequestException('No files provided');
+      if (this.options.optional) {
+        return undefined;
+      } else {
+        throw new BadRequestException('No files provided');
+      }
     }
 
     for (const file of files) {

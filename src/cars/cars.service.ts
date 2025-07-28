@@ -181,9 +181,34 @@ export class CarsService {
     return car;
   }
 
-  async update(carId: string, updateCarDto: UpdateCarDto, userId: string) {
+  async update(
+    carId: string,
+    updateCarDto: UpdateCarDto,
+    files: Express.Multer.File[],
+    userId: string,
+  ) {
     const existingCar = await this.findOneById(carId);
-    const updatedCar = this.carsRepository.merge(existingCar, updateCarDto);
+
+    const oldImages = existingCar.images;
+    if (oldImages.length > 0) {
+      await this.awsS3Service.deleteFile(oldImages);
+    }
+
+    const datePrefix = getCurrentDatePrefix();
+    const images = await Promise.all(
+      files.map((image) =>
+        this.awsS3Service.uploadFile(
+          image,
+          `cars/${datePrefix}/${uuidv4()}-${image.originalname}`,
+        ),
+      ),
+    );
+
+    const updatedCar = this.carsRepository.merge(existingCar, {
+      ...updateCarDto,
+      images,
+    });
+
     return this.carsRepository.save({
       ...updatedCar,
       updatedBy: {

@@ -59,13 +59,16 @@ export class CarsController {
 
   @Put(':id')
   @UseGuards(JwtAuthGuard)
+  @UseInterceptors(FilesInterceptor('files'))
   update(
     @Param('id') id: string,
     @Body() updateCarDto: UpdateCarDto,
+    @UploadedFiles(ImageFileValidationPipe)
+    files: Express.Multer.File[],
     @User() user: UserPayload,
   ) {
     const userId = user.id;
-    return this.carsService.update(id, updateCarDto, userId);
+    return this.carsService.update(id, updateCarDto, files, userId);
   }
 
   @Delete(':id')

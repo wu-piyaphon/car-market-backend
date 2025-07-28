@@ -6,7 +6,6 @@ import { UpdateCarDto } from '@/cars/dtos/update-car.dto';
 import { Car } from '@/cars/entities/car.entity';
 import { AwsS3Service } from '@/common/aws-s3.service';
 import { PaginationResponseDto } from '@/common/dtos/pagination-response.dto';
-import { getTimestamp } from '@/common/utils/date.utils';
 import { generateCarSlug } from '@/common/utils/slug.utils';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -26,14 +25,12 @@ export class CarsService {
     files: Express.Multer.File[],
     userId: string,
   ) {
-    const timestamp = getTimestamp();
-
     const images = await Promise.all(
       files.map((file) => this.awsS3Service.uploadFile(file, 'cars')),
     );
 
     const brand = await this.carBrandsService.findOne(car.brandId);
-    const slug = generateCarSlug(brand.name, car, timestamp);
+    const slug = generateCarSlug(brand.name, car);
 
     const createdCar = this.carsRepository.create({
       ...car,

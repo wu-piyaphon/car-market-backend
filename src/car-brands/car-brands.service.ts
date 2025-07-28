@@ -76,6 +76,7 @@ export class CarBrandsService {
 
   async remove(id: string): Promise<void> {
     const brand = await this.findOne(id);
+    await this.awsS3Service.deleteFile(brand.image);
     await this.carBrandRepository.remove(brand);
   }
 }

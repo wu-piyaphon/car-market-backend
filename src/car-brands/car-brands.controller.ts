@@ -21,8 +21,8 @@ import {
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 
-@UseGuards(JwtAuthGuard)
 @Controller('car-brands')
+@UseGuards(JwtAuthGuard)
 export class CarBrandsController {
   constructor(private readonly carBrandsService: CarBrandsService) {}
 

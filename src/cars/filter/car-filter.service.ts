@@ -5,11 +5,6 @@ import { CarFilterQueryDto } from '../dtos/car-filter-query.dto';
 import { CarFilterResponseDto } from '../dtos/car-filter-response.dto';
 import { Car } from '../entities/car.entity';
 
-type FilterQueryResult = {
-  value: string;
-  count: number;
-};
-
 @Injectable()
 export class CarFilterService {
   constructor(
@@ -46,28 +41,40 @@ export class CarFilterService {
      * Optimize attempt 1: Used raw SQL with UNION ALL to combine the queries and use a single round-trip,
      * but didn't work because each filter must be self-exclusion (not filtering itself)
      */
-    const getDistinctWithCount = async (column: string) => {
-      const subQb = this.carsRepository.createQueryBuilder('car');
-      subQb.leftJoin('car.brand', 'brand');
-      subQb.leftJoin('car.type', 'type');
-      subQb.leftJoin('car.category', 'category');
+    const getDistinctWithCount = async (
+      column: string,
+      imageColumn?: string,
+    ): Promise<Array<{ name: string; count: number; image?: string }>> => {
+      const subQb = this.carsRepository
+        .createQueryBuilder('car')
+        .leftJoin('car.brand', 'brand')
+        .leftJoin('car.type', 'type')
+        .leftJoin('car.category', 'category');
 
+      // Apply all filters except the one for the current column
       eqFilters.forEach(({ field, value, path }) => {
         if (!!value && column !== path) {
           subQb.andWhere(`${path} = :${field}`, { [field]: value });
         }
       });
-      const selectCols = [`${column} as value`, `COUNT(*) as count`];
 
-      const rows: FilterQueryResult[] = await subQb
-        .select(selectCols)
-        .groupBy('value')
-        .getRawMany();
+      // Build select and group by clauses
+      const selectCols = [`${column} as value`, `COUNT(*) as count`];
+      if (imageColumn) {
+        selectCols.push(`${imageColumn} as image`);
+        subQb.groupBy('value').addGroupBy(imageColumn);
+      } else {
+        subQb.groupBy(column);
+      }
+
+      const rows = await subQb.select(selectCols).getRawMany();
+
       return rows
-        .filter((row: FilterQueryResult) => row.value !== null)
-        .map((row: FilterQueryResult) => ({
+        .filter((row) => row.value !== null)
+        .map((row) => ({
           name: String(row.value),
           count: Number(row.count),
+          ...(row.image ? { image: row.image } : {}),
         }));
     };
 
@@ -83,8 +90,8 @@ export class CarFilterService {
       colors,
       engineTypes,
     ] = await Promise.all([
-      getDistinctWithCount('brand.name'),
-      getDistinctWithCount('type.name'),
+      getDistinctWithCount('brand.name', 'brand.image'),
+      getDistinctWithCount('type.name', 'type.image'),
       getDistinctWithCount('category.name'),
       getDistinctWithCount('car.model'),
       getDistinctWithCount('car.subModel'),
@@ -95,8 +102,8 @@ export class CarFilterService {
     ]);
 
     return {
-      brands,
-      types,
+      brands: brands,
+      types: types,
       categories,
       models,
       subModels,

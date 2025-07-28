@@ -1,7 +1,13 @@
 import { toNumber } from '@/common/utils/transform.utils';
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform, Type } from 'class-transformer';
-import { IsArray, IsNumber, ValidateNested, IsString } from 'class-validator';
+import {
+  IsArray,
+  IsNumber,
+  ValidateNested,
+  IsString,
+  IsOptional,
+} from 'class-validator';
 
 export class FilterOption {
   @IsString()
@@ -12,6 +18,11 @@ export class FilterOption {
   @Transform(({ value }) => toNumber(value))
   @ApiProperty({ description: 'The count of cars that match the filter' })
   count: number;
+
+  @IsString()
+  @IsOptional()
+  @ApiProperty({ description: 'The image of the filter' })
+  image?: string;
 }
 
 export class CarFilterResponseDto {

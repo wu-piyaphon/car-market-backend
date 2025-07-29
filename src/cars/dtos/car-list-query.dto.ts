@@ -1,5 +1,5 @@
 import { EngineType } from '@/common/enums/engine-type.enum';
-import { SalesType } from '@/common/enums/sales-type.enum';
+import { SalesRequestType } from '@/common/enums/sales-request.enum';
 import { Transmission } from '@/common/enums/transmission.enum';
 import { toBoolean, toNumber } from '@/common/utils/transform.utils';
 import { ApiPropertyOptional } from '@nestjs/swagger';
@@ -97,10 +97,13 @@ export class CarListQueryDto {
   maxPrice?: number;
 
   @IsOptional()
-  @IsEnum(SalesType)
+  @IsEnum(SalesRequestType)
   @Transform(({ value }) => (!value ? undefined : value))
-  @ApiPropertyOptional({ enum: SalesType, description: 'Car sales type' })
-  salesType?: SalesType;
+  @ApiPropertyOptional({
+    enum: SalesRequestType,
+    description: 'Car sales type',
+  })
+  salesType?: SalesRequestType;
 
   @IsOptional()
   @IsString()

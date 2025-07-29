@@ -1,5 +1,5 @@
 import { EngineType } from '@/common/enums/engine-type.enum';
-import { SalesType } from '@/common/enums/sales-type.enum';
+import { SalesRequestType } from '@/common/enums/sales-request.enum';
 import { Transmission } from '@/common/enums/transmission.enum';
 import { toBoolean, toNumber } from '@/common/utils/transform.utils';
 import { ApiProperty } from '@nestjs/swagger';
@@ -89,10 +89,10 @@ export class CreateCarDto {
   @ApiProperty({ description: 'Car current license plate' })
   currentLicensePlate: string;
 
-  @IsEnum(SalesType)
+  @IsEnum(SalesRequestType)
   @IsNotEmpty()
-  @ApiProperty({ description: 'Car sales type', enum: SalesType })
-  salesType: SalesType;
+  @ApiProperty({ description: 'Car sales type', enum: SalesRequestType })
+  salesType: SalesRequestType;
 
   @IsBoolean()
   @IsOptional()

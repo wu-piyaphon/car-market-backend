@@ -2,7 +2,7 @@ import { CarBrand } from '@/car-brands/entities/car-brand.entity';
 import { CarCategory } from '@/car-categories/entities/car-category.entity';
 import { CarType } from '@/car-types/entities/car-type.entity';
 import { EngineType } from '@/common/enums/engine-type.enum';
-import { SalesType } from '@/common/enums/sales-type.enum';
+import { SalesRequestType } from '@/common/enums/sales-request.enum';
 import { Transmission } from '@/common/enums/transmission.enum';
 import { User } from '@/users/user.entity';
 import {
@@ -62,8 +62,8 @@ export class Car {
   @Column({ name: 'is_active', default: true })
   isActive: boolean;
 
-  @Column({ name: 'sales_type', type: 'enum', enum: SalesType })
-  salesType: SalesType;
+  @Column({ name: 'sales_type', type: 'enum', enum: SalesRequestType })
+  salesType: SalesRequestType;
 
   @CreateDateColumn({ name: 'created_at', type: 'timestamp' })
   createdAt: Date;

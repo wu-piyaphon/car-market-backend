@@ -1,4 +1,4 @@
-import { SalesRequestStatus } from '@/common/enums/sales-type.enum';
+import { SalesRequestStatus } from '@/common/enums/sales-request.enum';
 import { CreateSellingRequestDto } from '@/selling-requests/dtos/create-selling-request.dto';
 import { ApiProperty, PartialType } from '@nestjs/swagger';
 import { IsEnum, IsNotEmpty, IsString } from 'class-validator';

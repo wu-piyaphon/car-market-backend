@@ -1,4 +1,7 @@
-import { SalesRequestStatus, SalesType } from '@/common/enums/sales-type.enum';
+import {
+  SalesRequestStatus,
+  SalesRequestType,
+} from '@/common/enums/sales-request.enum';
 import {
   Column,
   CreateDateColumn,
@@ -27,8 +30,8 @@ export class SellingRequest {
   @Column({ name: 'note', default: '' })
   note: string;
 
-  @Column({ name: 'type', type: 'enum', enum: SalesType })
-  type: SalesType;
+  @Column({ name: 'type', type: 'enum', enum: SalesRequestType })
+  type: SalesRequestType;
 
   @Column({
     name: 'status',

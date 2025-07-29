@@ -1,4 +1,7 @@
-import { SalesRequestStatus, SalesType } from '@/common/enums/sales-type.enum';
+import {
+  SalesRequestStatus,
+  SalesRequestType,
+} from '@/common/enums/sales-request.enum';
 import { SellingRequest } from '@/selling-requests/entities/selling-request.entity';
 
 export class SellingRequestListResponseDto {
@@ -8,7 +11,7 @@ export class SellingRequestListResponseDto {
   nickname: string;
   phoneNumber: string;
   note: string;
-  type: SalesType;
+  type: SalesRequestType;
   status: SalesRequestStatus;
 
   constructor(sellingRequest: SellingRequest) {

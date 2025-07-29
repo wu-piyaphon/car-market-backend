@@ -1,4 +1,4 @@
-import { SalesType } from '@/common/enums/sales-type.enum';
+import { SalesRequestType } from '@/common/enums/sales-request.enum';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEnum, IsNotEmpty, IsString } from 'class-validator';
 
@@ -23,11 +23,11 @@ export class CreateSellingRequestDto {
   @ApiProperty({ description: 'Selling request user phone number' })
   phoneNumber: string;
 
-  @IsEnum(SalesType)
+  @IsEnum(SalesRequestType)
   @IsNotEmpty()
   @ApiProperty({
-    enum: SalesType,
+    enum: SalesRequestType,
     description: 'Selling request type',
   })
-  type: SalesType;
+  type: SalesRequestType;
 }

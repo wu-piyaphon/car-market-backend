@@ -1,4 +1,4 @@
-export enum SalesType {
+export enum SalesRequestType {
   OWNER = 'OWNER',
   CONSIGNMENT = 'CONSIGNMENT',
 }

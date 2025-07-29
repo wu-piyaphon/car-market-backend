@@ -1,15 +1,21 @@
 import { IsEnum, IsNumber, IsOptional, IsString } from 'class-validator';
 
-import { SalesRequestStatus, SalesType } from '@/common/enums/sales-type.enum';
+import {
+  SalesRequestStatus,
+  SalesRequestType,
+} from '@/common/enums/sales-request.enum';
 import { Transform } from 'class-transformer';
 import { toNumber } from '@/common/utils/transform.utils';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 
 export class SellingRequestListQueryDto {
   @IsOptional()
-  @IsEnum(SalesType)
-  @ApiPropertyOptional({ enum: SalesType, description: 'Selling request type' })
-  type?: SalesType;
+  @IsEnum(SalesRequestType)
+  @ApiPropertyOptional({
+    enum: SalesRequestType,
+    description: 'Selling request type',
+  })
+  type?: SalesRequestType;
 
   @IsOptional()
   @IsString()

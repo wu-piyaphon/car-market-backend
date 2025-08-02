@@ -23,10 +23,8 @@ import { AppConfig, DatabaseConfig } from './config';
     }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
-      useFactory: (configService: ConfigService) => {
-        console.log(configService.get('database'));
-        return configService.get('database');
-      },
+      useFactory: (configService: ConfigService) =>
+        configService.get('database'),
       inject: [ConfigService],
     }),
     UsersModule,

@@ -19,12 +19,12 @@ export class AuthService {
     const foundUser = await this.usersService.findOne(email);
 
     if (!foundUser) {
-      throw new BadRequestException('Invalid credentials');
+      throw new BadRequestException('Invalid email or password');
     }
 
     const isPasswordValid = await bcrypt.compare(password, foundUser.password);
     if (!isPasswordValid) {
-      throw new BadRequestException('Invalid credentials');
+      throw new BadRequestException('Invalid email or password');
     }
 
     const payload: JwtPayload = { id: foundUser.id, email };

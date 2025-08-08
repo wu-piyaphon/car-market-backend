@@ -20,4 +20,8 @@ export class UsersService {
     const newUser = this.usersRepository.create(user);
     return await this.usersRepository.save(newUser);
   }
+
+  async findById(id: string): Promise<User | null> {
+    return await this.usersRepository.findOne({ where: { id } });
+  }
 }

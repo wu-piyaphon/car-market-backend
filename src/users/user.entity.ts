@@ -1,4 +1,5 @@
 import { Car } from '@/cars/entities/car.entity';
+import { Role } from '@/common/enums/role.enum';
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity('users')
@@ -19,7 +20,7 @@ export class User {
   password: string;
 
   @Column()
-  role: string;
+  role: Role;
 
   @OneToMany(() => Car, (car) => car.createdBy)
   createdCars: Car[];

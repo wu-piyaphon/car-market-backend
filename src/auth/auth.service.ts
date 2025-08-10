@@ -13,6 +13,7 @@ import { SignInDto } from '@/auth/dto/sign-in.dto';
 import { RefreshTokenDto } from '@/auth/dto/refresh-token.dto';
 import { JwtPayload } from '@/common/interfaces/jwt-payload.interface';
 import { AUTH_TOKEN_EXPIRES_IN } from '@/config/auth.config';
+import { UserResponseDto } from '@/users/dtos/user-response.dto';
 
 @Injectable()
 export class AuthService {
@@ -20,6 +21,18 @@ export class AuthService {
     private readonly jwtService: JwtService,
     private readonly usersService: UsersService,
   ) {}
+
+  async getMe(userId: string): Promise<UserResponseDto> {
+    try {
+      const user = await this.usersService.findById(userId);
+      if (!user) {
+        throw new UnauthorizedException('User not found');
+      }
+      return new UserResponseDto(user);
+    } catch {
+      throw new UnauthorizedException('Invalid or expired token');
+    }
+  }
 
   async signIn(signInDto: SignInDto) {
     const { email, password } = signInDto;

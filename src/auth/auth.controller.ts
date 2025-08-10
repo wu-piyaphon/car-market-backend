@@ -1,8 +1,11 @@
-import { Body, Controller, Post } from '@nestjs/common';
-import { SignUpDto } from '@/auth/dto/sign-up.dto';
-import { SignInDto } from '@/auth/dto/sign-in.dto';
 import { AuthService } from '@/auth/auth.service';
 import { RefreshTokenDto } from '@/auth/dto/refresh-token.dto';
+import { SignInDto } from '@/auth/dto/sign-in.dto';
+import { SignUpDto } from '@/auth/dto/sign-up.dto';
+import { User } from '@/common/decorators/user.decorator';
+import { UserPayload } from '@/common/interfaces/user-payload.interface';
+import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
+import { JwtAuthGuard } from './jwt-auth.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -21,5 +24,11 @@ export class AuthController {
   @Post('refresh')
   refresh(@Body() refreshTokenDto: RefreshTokenDto) {
     return this.authService.refreshToken(refreshTokenDto);
+  }
+
+  @Get('me')
+  @UseGuards(JwtAuthGuard)
+  getMe(@User() user: UserPayload) {
+    return this.authService.getMe(user.id);
   }
 }

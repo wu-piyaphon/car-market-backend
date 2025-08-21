@@ -86,8 +86,8 @@ export class CreateCarDto {
 
   @IsString()
   @IsNotEmpty()
-  @ApiProperty({ description: 'Car current license plate' })
-  currentLicensePlate: string;
+  @ApiProperty({ description: 'Car new license plate' })
+  newLicensePlate: string;
 
   @IsEnum(SalesRequestType)
   @IsNotEmpty()

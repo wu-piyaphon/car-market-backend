@@ -53,11 +53,11 @@ export class Car {
   @Column('text', { array: true })
   images: string[];
 
-  @Column({ name: 'previous_license_plate' })
+  @Column({ name: 'previous_license_plate', nullable: true })
   previousLicensePlate: string;
 
-  @Column({ name: 'current_license_plate' })
-  currentLicensePlate: string;
+  @Column({ name: 'new_license_plate', nullable: true })
+  newLicensePlate: string;
 
   @Column({ name: 'is_active', default: true })
   isActive: boolean;

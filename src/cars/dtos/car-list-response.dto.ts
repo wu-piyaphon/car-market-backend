@@ -13,7 +13,7 @@ export class CarListResponseDto {
   modelYear: number;
   price: number;
   previousLicensePlate: string;
-  currentLicensePlate: string;
+  newLicensePlate: string;
   isActive: boolean;
   slug: string;
 
@@ -29,7 +29,7 @@ export class CarListResponseDto {
     this.modelYear = car.modelYear;
     this.price = car.price;
     this.previousLicensePlate = car.previousLicensePlate;
-    this.currentLicensePlate = car.currentLicensePlate;
+    this.newLicensePlate = car.newLicensePlate;
     this.isActive = car.isActive;
     this.slug = car.slug;
   }

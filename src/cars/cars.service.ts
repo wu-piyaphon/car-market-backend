@@ -191,11 +191,46 @@ export class CarsService {
 
     const updatedCar = this.carsRepository.merge(existingCar, {
       ...updateCarDto,
+      brand: {
+        id: updateCarDto.brandId,
+      },
+      type: {
+        id: updateCarDto.typeId,
+      },
+      category: {
+        id: updateCarDto.categoryId,
+      },
       images,
     });
 
     return this.carsRepository.save({
       ...updatedCar,
+      updatedBy: {
+        id: userId,
+      },
+    });
+  }
+
+  async activate(carId: string, userId: string) {
+    const car = await this.findOneById(carId);
+
+    car.isActive = true;
+
+    return this.carsRepository.save({
+      ...car,
+      updatedBy: {
+        id: userId,
+      },
+    });
+  }
+
+  async disable(carId: string, userId: string) {
+    const car = await this.findOneById(carId);
+
+    car.isActive = false;
+
+    return this.carsRepository.save({
+      ...car,
       updatedBy: {
         id: userId,
       },

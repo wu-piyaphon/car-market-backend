@@ -48,7 +48,10 @@ export class CarsController {
 
   @Get(':id')
   @UseGuards(JwtAuthGuard)
-  findOne(@Param('id') id: string) {
+  findOne(
+    @Param('id')
+    id: string,
+  ) {
     return this.carsService.findOneById(id);
   }
 
@@ -69,6 +72,20 @@ export class CarsController {
   ) {
     const userId = user.id;
     return this.carsService.update(id, updateCarDto, files, userId);
+  }
+
+  @Put(':id/activate')
+  @UseGuards(JwtAuthGuard)
+  activate(@Param('id') id: string, @User() user: UserPayload) {
+    const userId = user.id;
+    return this.carsService.activate(id, userId);
+  }
+
+  @Put(':id/disable')
+  @UseGuards(JwtAuthGuard)
+  disable(@Param('id') id: string, @User() user: UserPayload) {
+    const userId = user.id;
+    return this.carsService.disable(id, userId);
   }
 
   @Delete(':id')

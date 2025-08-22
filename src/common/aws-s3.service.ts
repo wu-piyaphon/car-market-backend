@@ -6,7 +6,6 @@ import {
 } from '@aws-sdk/client-s3';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class AwsS3Service {
@@ -25,9 +24,9 @@ export class AwsS3Service {
   }
 
   async uploadFile(file: Express.Multer.File, dir: string): Promise<string> {
-    const datePrefix = new Date().toISOString().split('T')[0];
+    const timestamp = Date.now();
 
-    const key = `${dir}/${datePrefix}/${uuidv4()}-${file.originalname}`;
+    const key = `${dir}/${timestamp}/${file.originalname}`;
 
     await this.s3.send(
       new PutObjectCommand({

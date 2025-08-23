@@ -6,7 +6,7 @@ import { UpdateSellingRequestDto } from '@/selling-requests/dtos/update-selling-
 import { SellingRequest } from '@/selling-requests/entities/selling-request.entity';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Brackets, Repository } from 'typeorm';
 
 @Injectable()
 export class SellingRequestsService {
@@ -44,8 +44,20 @@ export class SellingRequestsService {
 
     if (keyword) {
       qb.andWhere(
-        'LOWER(request.firstName) LIKE LOWER(:keyword) OR LOWER(request.lastName) LIKE LOWER(:keyword) OR LOWER(request.nickname) LIKE LOWER(:keyword) OR LOWER(request.phoneNumber) LIKE LOWER(:keyword)',
-        { keyword: `%${keyword}%` },
+        new Brackets((qb) => {
+          qb.where('LOWER(request.firstName) LIKE LOWER(:keyword)', {
+            keyword: `%${keyword}%`,
+          })
+            .orWhere('LOWER(request.lastName) LIKE LOWER(:keyword)', {
+              keyword: `%${keyword}%`,
+            })
+            .orWhere('LOWER(request.nickname) LIKE LOWER(:keyword)', {
+              keyword: `%${keyword}%`,
+            })
+            .orWhere('LOWER(request.phoneNumber) LIKE LOWER(:keyword)', {
+              keyword: `%${keyword}%`,
+            });
+        }),
       );
     }
 

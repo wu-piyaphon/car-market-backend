@@ -11,6 +11,7 @@ export class SellingRequestListResponseDto {
   nickname: string;
   phoneNumber: string;
   note: string;
+  createdAt: Date;
   type: SalesRequestType;
   status: SalesRequestStatus;
 
@@ -22,6 +23,7 @@ export class SellingRequestListResponseDto {
     this.phoneNumber = sellingRequest.phoneNumber;
     this.note = sellingRequest.note;
     this.type = sellingRequest.type;
+    this.createdAt = sellingRequest.createdAt;
     this.status = sellingRequest.status;
   }
 }

@@ -2,15 +2,18 @@ import {
   RequestContactStatus,
   SalesRequestType,
 } from '@/common/enums/request.enum';
+import { User } from '@/users/user.entity';
 import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
+  ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 
-@Entity()
+@Entity('selling_requests')
 export class SellingRequest {
   @PrimaryGeneratedColumn('uuid')
   id: string;
@@ -46,4 +49,8 @@ export class SellingRequest {
 
   @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date;
+
+  @ManyToOne(() => User, (user) => user.updatedCars, { nullable: true })
+  @JoinColumn({ name: 'updated_by' })
+  updatedBy: User;
 }

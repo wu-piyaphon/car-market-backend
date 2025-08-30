@@ -15,7 +15,7 @@ export class SellingRequestsService {
     private sellingRequestRepository: Repository<SellingRequest>,
   ) {}
 
-  async createSellingRequest(
+  async create(
     createSellingRequestDto: CreateSellingRequestDto,
   ): Promise<SellingRequest> {
     const newSellingRequest = this.sellingRequestRepository.create(
@@ -27,7 +27,7 @@ export class SellingRequestsService {
   async findAllPaginated(
     query: SellingRequestListQueryDto,
   ): Promise<PaginationResponseDto<SellingRequestListResponseDto>> {
-    const { page = 1, pageSize = 10, type, keyword, status } = query;
+    const { page, pageSize, type, keyword, status } = query;
 
     const qb = this.sellingRequestRepository
       .createQueryBuilder('request')
@@ -67,9 +67,9 @@ export class SellingRequestsService {
       items: sellingRequests.map(
         (sellingRequest) => new SellingRequestListResponseDto(sellingRequest),
       ),
+      total,
       page,
       pageSize,
-      total,
     };
   }
 
@@ -83,9 +83,10 @@ export class SellingRequestsService {
     return sellingRequest;
   }
 
-  async updateSellingRequest(
+  async update(
     id: string,
     updateSellingRequestDto: UpdateSellingRequestDto,
+    userId: string,
   ): Promise<SellingRequest> {
     const sellingRequestToUpdate = await this.findOneById(id);
 
@@ -94,10 +95,15 @@ export class SellingRequestsService {
       updateSellingRequestDto,
     );
 
-    return this.sellingRequestRepository.save(updatedSellingRequest);
+    return this.sellingRequestRepository.save({
+      ...updatedSellingRequest,
+      updatedBy: {
+        id: userId,
+      },
+    });
   }
 
-  async deleteSellingRequest(id: string): Promise<void> {
+  async delete(id: string): Promise<void> {
     const sellingRequestToDelete = await this.findOneById(id);
     await this.sellingRequestRepository.remove(sellingRequestToDelete);
   }

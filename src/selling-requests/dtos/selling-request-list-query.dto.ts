@@ -35,13 +35,13 @@ export class SellingRequestListQueryDto {
 
   @IsOptional()
   @IsNumber()
-  @Transform(({ value }) => toNumber(value))
+  @Transform(({ value }) => toNumber(value) ?? 1)
   @ApiPropertyOptional({ default: 1, description: 'Page number' })
-  page?: number = 1;
+  page: number;
 
   @IsOptional()
   @IsNumber()
-  @Transform(({ value }) => toNumber(value))
+  @Transform(({ value }) => toNumber(value) ?? 10)
   @ApiPropertyOptional({ default: 10, description: 'Page size' })
-  pageSize?: number = 10;
+  pageSize: number;
 }

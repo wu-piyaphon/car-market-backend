@@ -1,9 +1,9 @@
 import { IsEnum, IsNumber, IsOptional, IsString } from 'class-validator';
 
 import {
-  SalesRequestStatus,
+  RequestContactStatus,
   SalesRequestType,
-} from '@/common/enums/sales-request.enum';
+} from '@/common/enums/request.enum';
 import { Transform } from 'class-transformer';
 import { toNumber } from '@/common/utils/transform.utils';
 import { ApiPropertyOptional } from '@nestjs/swagger';
@@ -26,12 +26,12 @@ export class SellingRequestListQueryDto {
   keyword?: string;
 
   @IsOptional()
-  @IsEnum(SalesRequestStatus)
+  @IsEnum(RequestContactStatus)
   @ApiPropertyOptional({
-    enum: SalesRequestStatus,
+    enum: RequestContactStatus,
     description: 'Selling request status',
   })
-  status?: SalesRequestStatus;
+  status?: RequestContactStatus;
 
   @IsOptional()
   @IsNumber()

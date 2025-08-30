@@ -2,7 +2,7 @@ import { CarBrand } from '@/car-brands/entities/car-brand.entity';
 import { CarCategory } from '@/car-categories/entities/car-category.entity';
 import { CarType } from '@/car-types/entities/car-type.entity';
 import { EngineType } from '@/common/enums/engine-type.enum';
-import { SalesRequestType } from '@/common/enums/sales-request.enum';
+import { SalesRequestType } from '@/common/enums/request.enum';
 import { Transmission } from '@/common/enums/transmission.enum';
 import { User } from '@/users/user.entity';
 import {

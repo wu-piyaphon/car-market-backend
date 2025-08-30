@@ -1,5 +1,5 @@
 import { EngineType } from '@/common/enums/engine-type.enum';
-import { SalesRequestType } from '@/common/enums/sales-request.enum';
+import { SalesRequestType } from '@/common/enums/request.enum';
 import { Transmission } from '@/common/enums/transmission.enum';
 import { toBoolean, toNumber } from '@/common/utils/transform.utils';
 import { ApiPropertyOptional } from '@nestjs/swagger';

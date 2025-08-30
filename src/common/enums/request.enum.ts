@@ -3,7 +3,7 @@ export enum SalesRequestType {
   CONSIGNMENT = 'CONSIGNMENT',
 }
 
-export enum SalesRequestStatus {
+export enum RequestContactStatus {
   NOT_CONTACTED = 'NOT_CONTACTED',
   CONTACTED = 'CONTACTED',
 }

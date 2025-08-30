@@ -1,7 +1,7 @@
 import {
-  SalesRequestStatus,
+  RequestContactStatus,
   SalesRequestType,
-} from '@/common/enums/sales-request.enum';
+} from '@/common/enums/request.enum';
 import {
   Column,
   CreateDateColumn,
@@ -36,10 +36,10 @@ export class SellingRequest {
   @Column({
     name: 'status',
     type: 'enum',
-    enum: SalesRequestStatus,
-    default: SalesRequestStatus.NOT_CONTACTED,
+    enum: RequestContactStatus,
+    default: RequestContactStatus.NOT_CONTACTED,
   })
-  status: SalesRequestStatus;
+  status: RequestContactStatus;
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;

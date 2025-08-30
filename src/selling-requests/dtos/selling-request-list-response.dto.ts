@@ -1,7 +1,7 @@
 import {
-  SalesRequestStatus,
+  RequestContactStatus,
   SalesRequestType,
-} from '@/common/enums/sales-request.enum';
+} from '@/common/enums/request.enum';
 import { SellingRequest } from '@/selling-requests/entities/selling-request.entity';
 
 export class SellingRequestListResponseDto {
@@ -13,7 +13,7 @@ export class SellingRequestListResponseDto {
   note: string;
   createdAt: Date;
   type: SalesRequestType;
-  status: SalesRequestStatus;
+  status: RequestContactStatus;
 
   constructor(sellingRequest: SellingRequest) {
     this.id = sellingRequest.id;

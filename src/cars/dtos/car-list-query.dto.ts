@@ -120,15 +120,13 @@ export class CarListQueryDto {
   })
   isActive?: boolean;
 
-  @IsOptional()
   @IsNumber()
   @Transform(({ value }) => toNumber(value))
   @ApiPropertyOptional({ default: 1, description: 'Page number' })
-  page?: number = 1;
+  page: number;
 
-  @IsOptional()
   @IsNumber()
   @Transform(({ value }) => toNumber(value))
   @ApiPropertyOptional({ default: 10, description: 'Page size' })
-  pageSize?: number = 10;
+  pageSize: number;
 }

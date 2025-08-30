@@ -33,15 +33,13 @@ export class SellingRequestListQueryDto {
   })
   status?: RequestContactStatus;
 
-  @IsOptional()
   @IsNumber()
-  @Transform(({ value }) => toNumber(value) ?? 1)
+  @Transform(({ value }) => toNumber(value))
   @ApiPropertyOptional({ default: 1, description: 'Page number' })
   page: number;
 
-  @IsOptional()
   @IsNumber()
-  @Transform(({ value }) => toNumber(value) ?? 10)
+  @Transform(({ value }) => toNumber(value))
   @ApiPropertyOptional({ default: 10, description: 'Page size' })
   pageSize: number;
 }

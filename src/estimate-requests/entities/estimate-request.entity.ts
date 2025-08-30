@@ -1,5 +1,6 @@
 import { CarBrand } from '@/car-brands/entities/car-brand.entity';
 import { RequestContactStatus } from '@/common/enums/request.enum';
+import { User } from '@/users/user.entity';
 import {
   Column,
   CreateDateColumn,
@@ -10,7 +11,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
-@Entity()
+@Entity('estimate_requests')
 export class EstimateRequest {
   @PrimaryGeneratedColumn('uuid')
   id: string;
@@ -58,4 +59,8 @@ export class EstimateRequest {
 
   @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date;
+
+  @ManyToOne(() => User, (user) => user.updatedCars, { nullable: true })
+  @JoinColumn({ name: 'updated_by' })
+  updatedBy: User;
 }

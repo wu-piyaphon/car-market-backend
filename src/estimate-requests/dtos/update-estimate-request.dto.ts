@@ -1,21 +1,21 @@
 import { RequestContactStatus } from '@/common/enums/request.enum';
-import { CreateSellingRequestDto } from '@/selling-requests/dtos/create-selling-request.dto';
+import { CreateEstimateRequestDto } from '@/estimate-requests/dtos/create-estimate-request.dto';
 import { ApiProperty, PartialType } from '@nestjs/swagger';
 import { IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
-export class UpdateSellingRequestDto extends PartialType(
-  CreateSellingRequestDto,
+export class UpdateEstimateRequestDto extends PartialType(
+  CreateEstimateRequestDto,
 ) {
   @IsString()
   @IsOptional()
-  @ApiProperty({ description: 'Selling request admin note' })
+  @ApiProperty({ description: 'Estimate request admin note' })
   note: string;
 
   @IsEnum(RequestContactStatus)
   @IsNotEmpty()
   @ApiProperty({
     enum: RequestContactStatus,
-    description: 'Selling request status',
+    description: 'Estimate request status',
   })
   status: RequestContactStatus;
 }

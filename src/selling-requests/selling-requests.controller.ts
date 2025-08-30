@@ -1,3 +1,10 @@
+import { JwtAuthGuard } from '@/auth/jwt-auth.guard';
+import { User } from '@/common/decorators/user.decorator';
+import { UserPayload } from '@/common/interfaces/user-payload.interface';
+import { CreateSellingRequestDto } from '@/selling-requests/dtos/create-selling-request.dto';
+import { SellingRequestListQueryDto } from '@/selling-requests/dtos/selling-request-list-query.dto';
+import { UpdateSellingRequestDto } from '@/selling-requests/dtos/update-selling-request.dto';
+import { SellingRequestsService } from '@/selling-requests/selling-requests.service';
 import {
   Body,
   Controller,
@@ -10,11 +17,6 @@ import {
   UseGuards,
   ValidationPipe,
 } from '@nestjs/common';
-import { SellingRequestsService } from '@/selling-requests/selling-requests.service';
-import { SellingRequestListQueryDto } from '@/selling-requests/dtos/selling-request-list-query.dto';
-import { CreateSellingRequestDto } from '@/selling-requests/dtos/create-selling-request.dto';
-import { UpdateSellingRequestDto } from '@/selling-requests/dtos/update-selling-request.dto';
-import { JwtAuthGuard } from '@/auth/jwt-auth.guard';
 
 @Controller('selling-requests')
 export class SellingRequestsController {
@@ -39,9 +41,7 @@ export class SellingRequestsController {
 
   @Post()
   async create(@Body() createSellingRequestDto: CreateSellingRequestDto) {
-    return this.sellingRequestsService.createSellingRequest(
-      createSellingRequestDto,
-    );
+    return this.sellingRequestsService.create(createSellingRequestDto);
   }
 
   @Put(':id')
@@ -49,16 +49,18 @@ export class SellingRequestsController {
   async update(
     @Param('id') id: string,
     @Body() updateSellingRequestDto: UpdateSellingRequestDto,
+    @User() user: UserPayload,
   ) {
-    return this.sellingRequestsService.updateSellingRequest(
+    return this.sellingRequestsService.update(
       id,
       updateSellingRequestDto,
+      user.id,
     );
   }
 
   @Delete(':id')
   @UseGuards(JwtAuthGuard)
   async delete(@Param('id') id: string) {
-    return this.sellingRequestsService.deleteSellingRequest(id);
+    return this.sellingRequestsService.delete(id);
   }
 }

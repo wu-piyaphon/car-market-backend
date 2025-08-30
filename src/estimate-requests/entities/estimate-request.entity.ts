@@ -32,6 +32,9 @@ export class EstimateRequest {
   @Column({ name: 'phone_number' })
   phoneNumber: string;
 
+  @Column({ name: 'line_id', nullable: true })
+  lineId: string;
+
   @Column('text', { array: true })
   images: string[];
 

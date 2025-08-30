@@ -45,6 +45,7 @@ export class EstimateRequestsService {
 
     const qb = this.estimateRequestsRepository
       .createQueryBuilder('request')
+      .leftJoinAndSelect('request.brand', 'brand')
       .skip((page - 1) * pageSize)
       .take(pageSize);
 
@@ -53,9 +54,16 @@ export class EstimateRequestsService {
         new Brackets((qb) => {
           qb.where('LOWER(request.firstName) LIKE LOWER(:keyword)', {
             keyword: `%${keyword}%`,
-          }).orWhere('LOWER(request.phoneNumber) LIKE LOWER(:keyword)', {
-            keyword: `%${keyword}%`,
-          });
+          })
+            .orWhere('LOWER(request.phoneNumber) LIKE LOWER(:keyword)', {
+              keyword: `%${keyword}%`,
+            })
+            .orWhere('LOWER(request.model) LIKE LOWER(:keyword)', {
+              keyword: `%${keyword}%`,
+            })
+            .orWhere('LOWER(brand.name) LIKE LOWER(:keyword)', {
+              keyword: `%${keyword}%`,
+            });
         }),
       );
     }

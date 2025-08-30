@@ -36,9 +36,15 @@ export class CreateEstimateRequestDto {
   @ApiProperty({ description: 'Estimate request user phone number' })
   phoneNumber: string;
 
-  @IsNumber()
+  @IsString()
   @IsOptional()
   @Transform(({ value }) => value ?? null)
+  @ApiProperty({ description: 'Estimate request user Line ID' })
+  lineId: string;
+
+  @IsNumber()
+  @IsOptional()
+  @Transform(({ value }) => (value ? toNumber(value) : null))
   @ApiProperty({
     description: 'Estimate request outstanding installments in month',
   })

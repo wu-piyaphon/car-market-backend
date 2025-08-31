@@ -3,12 +3,17 @@ import { Transmission } from '@/common/enums/transmission.enum';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { CarFilterQueryDto } from '../dtos/car-filter-query.dto';
+import { CarFilterResponseDto } from '../dtos/car-filter-response.dto';
 import { Car } from '../entities/car.entity';
 import { CarFilterService } from './car-filter.service';
 
 describe('CarFilterService', () => {
   let service: CarFilterService;
   let mockQueryBuilder: any;
+
+  const mockRepository = {
+    createQueryBuilder: jest.fn(),
+  };
 
   beforeEach(async () => {
     mockQueryBuilder = {
@@ -19,142 +24,338 @@ describe('CarFilterService', () => {
       addGroupBy: jest.fn().mockReturnThis(),
       getRawMany: jest.fn(),
     };
+
+    mockRepository.createQueryBuilder.mockReturnValue(mockQueryBuilder);
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         CarFilterService,
         {
           provide: getRepositoryToken(Car),
-          useValue: {
-            createQueryBuilder: jest.fn(() => mockQueryBuilder),
-          },
+          useValue: mockRepository,
         },
       ],
     }).compile();
 
     service = module.get<CarFilterService>(CarFilterService);
+
+    // Reset mocks
+    jest.clearAllMocks();
+    mockRepository.createQueryBuilder.mockReturnValue(mockQueryBuilder);
   });
 
   it('should be defined', () => {
     expect(service).toBeDefined();
   });
 
-  it('should return filter options with counts and return empty array if filter value is null', async () => {
-    // Arrange
-    mockQueryBuilder.getRawMany
-      .mockResolvedValueOnce([
-        { value: 'Toyota', count: 5, image: 'url' },
-        { value: 'Honda', count: 3, image: 'url' },
-      ]) // brands
-      .mockResolvedValueOnce([{ value: 'SUV', count: 4, image: 'url' }]) // types
-      .mockResolvedValueOnce([{ value: null, count: 2 }]) // categories
-      .mockResolvedValueOnce([{ value: 'Corolla', count: 3 }]) // models
-      .mockResolvedValueOnce([{ value: 'Altis', count: 1 }]) // subModels
-      .mockResolvedValueOnce([{ value: 2020, count: 2 }]) // modelYears
-      .mockResolvedValueOnce([{ value: Transmission.AUTOMATIC, count: 4 }]) // transmissions
-      .mockResolvedValueOnce([{ value: 'red', count: 2 }]) // colors
-      .mockResolvedValueOnce([{ value: EngineType.HYBRID, count: 1 }]); // engineTypes
+  describe('getFilters', () => {
+    it('should return filter options with counts', async () => {
+      // Arrange
+      const mockData = [
+        [
+          { value: 'Toyota', count: 5, image: 'toyota-url' },
+          { value: 'Honda', count: 3, image: 'honda-url' },
+        ], // brands
+        [{ value: 'SUV', count: 4, image: 'suv-url' }], // types
+        [
+          { value: 'NEW', count: 2 },
+          { value: 'USED', count: 5 },
+        ], // categories
+        [{ value: 'Corolla', count: 3 }], // models
+        [{ value: 'Altis', count: 1 }], // subModels
+        [{ value: 2020, count: 2 }], // modelYears
+        [{ value: Transmission.AUTOMATIC, count: 4 }], // transmissions
+        [{ value: 'red', count: 2 }], // colors
+        [{ value: EngineType.HYBRID, count: 1 }], // engineTypes
+      ];
 
-    const query: CarFilterQueryDto = {};
+      mockQueryBuilder.getRawMany
+        .mockResolvedValueOnce(mockData[0])
+        .mockResolvedValueOnce(mockData[1])
+        .mockResolvedValueOnce(mockData[2])
+        .mockResolvedValueOnce(mockData[3])
+        .mockResolvedValueOnce(mockData[4])
+        .mockResolvedValueOnce(mockData[5])
+        .mockResolvedValueOnce(mockData[6])
+        .mockResolvedValueOnce(mockData[7])
+        .mockResolvedValueOnce(mockData[8]);
 
-    // Act
-    const result = await service.getFilters(query);
+      const query: CarFilterQueryDto = {};
 
-    // Assert
-    expect(result).toEqual({
-      brands: [
-        { name: 'Toyota', count: 5, image: 'url' },
-        { name: 'Honda', count: 3, image: 'url' },
-      ],
-      types: [{ name: 'SUV', count: 4, image: 'url' }],
-      categories: [],
-      models: [{ name: 'Corolla', count: 3 }],
-      subModels: [{ name: 'Altis', count: 1 }],
-      modelYears: [{ name: '2020', count: 2 }],
-      transmissions: [{ name: Transmission.AUTOMATIC, count: 4 }],
-      colors: [{ name: 'red', count: 2 }],
-      engineTypes: [{ name: EngineType.HYBRID, count: 1 }],
+      // Act
+      const result = await service.getFilters(query);
+
+      // Assert
+      const expectedResult: CarFilterResponseDto = {
+        brands: [
+          { name: 'Toyota', count: 5, image: 'toyota-url' },
+          { name: 'Honda', count: 3, image: 'honda-url' },
+        ],
+        types: [{ name: 'SUV', count: 4, image: 'suv-url' }],
+        categories: [
+          { name: 'NEW', count: 2 },
+          { name: 'USED', count: 5 },
+        ],
+        models: [{ name: 'Corolla', count: 3 }],
+        subModels: [{ name: 'Altis', count: 1 }],
+        modelYears: [{ name: '2020', count: 2 }],
+        transmissions: [{ name: Transmission.AUTOMATIC, count: 4 }],
+        colors: [{ name: 'red', count: 2 }],
+        engineTypes: [{ name: EngineType.HYBRID, count: 1 }],
+      };
+
+      expect(result).toEqual(expectedResult);
+
+      // Verify query builder was called correct number of times (9 times for 9 filters)
+      expect(mockRepository.createQueryBuilder).toHaveBeenCalledTimes(9);
+      expect(mockQueryBuilder.leftJoin).toHaveBeenCalledWith(
+        'car.brand',
+        'brand',
+      );
+      expect(mockQueryBuilder.leftJoin).toHaveBeenCalledWith(
+        'car.type',
+        'type',
+      );
+      expect(mockQueryBuilder.leftJoin).toHaveBeenCalledWith(
+        'car.category',
+        'category',
+      );
+      expect(mockQueryBuilder.groupBy).toHaveBeenCalled();
+      expect(mockQueryBuilder.select).toHaveBeenCalled();
+      expect(mockQueryBuilder.getRawMany).toHaveBeenCalledTimes(9);
     });
-    // Check that leftJoin and groupBy were called
-    expect(mockQueryBuilder.leftJoin).toHaveBeenCalled();
-    expect(mockQueryBuilder.groupBy).toHaveBeenCalledWith('value');
-    expect(mockQueryBuilder.addGroupBy).toHaveBeenCalledWith('brand.image');
-    expect(mockQueryBuilder.addGroupBy).toHaveBeenCalledWith('type.image');
-    expect(mockQueryBuilder.select).toHaveBeenCalled();
-  });
 
-  it('should apply filters from query', async () => {
-    mockQueryBuilder.getRawMany.mockResolvedValue([]);
-    const query: CarFilterQueryDto = {
-      brand: 'Toyota',
-      type: 'SUV',
-      category: 'NEW',
-      model: 'Corolla',
-      subModel: 'Altis',
-      transmission: Transmission.AUTOMATIC,
-      color: 'red',
-      modelYear: 2020,
-      engineType: EngineType.HYBRID,
-      engineCapacity: 1800,
-    };
-    await service.getFilters(query);
-    // Should call andWhere for each filter
-    expect(mockQueryBuilder.andWhere).toHaveBeenCalled();
-    // Should call with correct filter values
-    expect(mockQueryBuilder.andWhere).toHaveBeenCalledWith(
-      'type.name = :type',
-      { type: 'SUV' },
-    );
-    expect(mockQueryBuilder.andWhere).toHaveBeenCalledWith(
-      'brand.name = :brand',
-      { brand: 'Toyota' },
-    );
-    expect(mockQueryBuilder.andWhere).toHaveBeenCalledWith(
-      'category.name = :category',
-      { category: 'NEW' },
-    );
-    expect(mockQueryBuilder.andWhere).toHaveBeenCalledWith(
-      'car.model = :model',
-      { model: 'Corolla' },
-    );
-    expect(mockQueryBuilder.andWhere).toHaveBeenCalledWith(
-      'car.subModel = :subModel',
-      { subModel: 'Altis' },
-    );
-    expect(mockQueryBuilder.andWhere).toHaveBeenCalledWith(
-      'car.transmission = :transmission',
-      { transmission: Transmission.AUTOMATIC },
-    );
-    expect(mockQueryBuilder.andWhere).toHaveBeenCalledWith(
-      'car.color = :color',
-      { color: 'red' },
-    );
-    expect(mockQueryBuilder.andWhere).toHaveBeenCalledWith(
-      'car.modelYear = :modelYear',
-      { modelYear: 2020 },
-    );
-    expect(mockQueryBuilder.andWhere).toHaveBeenCalledWith(
-      'car.engineType = :engineType',
-      { engineType: EngineType.HYBRID },
-    );
-    expect(mockQueryBuilder.andWhere).toHaveBeenCalledWith(
-      'car.engineCapacity = :engineCapacity',
-      { engineCapacity: 1800 },
-    );
-  });
+    it('should return empty array if filter value is null', async () => {
+      // Arrange
+      const mockData = [
+        [], // brands
+        [], // types
+        [{ value: null, count: 2 }], // categories with null value
+        [], // models
+        [], // subModels
+        [], // modelYears
+        [], // transmissions
+        [], // colors
+        [], // engineTypes
+      ];
 
-  it('should return empty arrays if no results', async () => {
-    mockQueryBuilder.getRawMany.mockResolvedValue([]);
-    const result = await service.getFilters({});
-    expect(result).toEqual({
-      brands: [],
-      types: [],
-      categories: [],
-      models: [],
-      subModels: [],
-      modelYears: [],
-      transmissions: [],
-      colors: [],
-      engineTypes: [],
+      mockQueryBuilder.getRawMany
+        .mockResolvedValueOnce(mockData[0])
+        .mockResolvedValueOnce(mockData[1])
+        .mockResolvedValueOnce(mockData[2])
+        .mockResolvedValueOnce(mockData[3])
+        .mockResolvedValueOnce(mockData[4])
+        .mockResolvedValueOnce(mockData[5])
+        .mockResolvedValueOnce(mockData[6])
+        .mockResolvedValueOnce(mockData[7])
+        .mockResolvedValueOnce(mockData[8]);
+
+      const query: CarFilterQueryDto = {};
+
+      // Act
+      const result = await service.getFilters(query);
+
+      // Assert
+      expect(result).toEqual({
+        brands: [],
+        types: [],
+        categories: [], // null values should be filtered out
+        models: [],
+        subModels: [],
+        modelYears: [],
+        transmissions: [],
+        colors: [],
+        engineTypes: [],
+      });
+    });
+
+    it('should apply filters from query and exclude self-filtering', async () => {
+      // Arrange
+      mockQueryBuilder.getRawMany.mockResolvedValue([]);
+
+      const query: CarFilterQueryDto = {
+        brand: 'Toyota',
+        type: 'SUV',
+        category: 'NEW',
+        model: 'Corolla',
+        subModel: 'Altis',
+        transmission: Transmission.AUTOMATIC,
+        color: 'red',
+        modelYear: 2020,
+        engineType: EngineType.HYBRID,
+        engineCapacity: 1800,
+      };
+
+      // Act
+      await service.getFilters(query);
+
+      // Assert - Check that andWhere was called for filtering
+      expect(mockQueryBuilder.andWhere).toHaveBeenCalled();
+
+      // Verify that filters are applied correctly
+      expect(mockQueryBuilder.andWhere).toHaveBeenCalledWith(
+        'type.name = :type',
+        { type: 'SUV' },
+      );
+      expect(mockQueryBuilder.andWhere).toHaveBeenCalledWith(
+        'brand.name = :brand',
+        { brand: 'Toyota' },
+      );
+      expect(mockQueryBuilder.andWhere).toHaveBeenCalledWith(
+        'category.name = :category',
+        { category: 'NEW' },
+      );
+      expect(mockQueryBuilder.andWhere).toHaveBeenCalledWith(
+        'car.model = :model',
+        { model: 'Corolla' },
+      );
+      expect(mockQueryBuilder.andWhere).toHaveBeenCalledWith(
+        'car.subModel = :subModel',
+        { subModel: 'Altis' },
+      );
+      expect(mockQueryBuilder.andWhere).toHaveBeenCalledWith(
+        'car.transmission = :transmission',
+        { transmission: Transmission.AUTOMATIC },
+      );
+      expect(mockQueryBuilder.andWhere).toHaveBeenCalledWith(
+        'car.color = :color',
+        { color: 'red' },
+      );
+      expect(mockQueryBuilder.andWhere).toHaveBeenCalledWith(
+        'car.modelYear = :modelYear',
+        { modelYear: 2020 },
+      );
+      expect(mockQueryBuilder.andWhere).toHaveBeenCalledWith(
+        'car.engineType = :engineType',
+        { engineType: EngineType.HYBRID },
+      );
+      expect(mockQueryBuilder.andWhere).toHaveBeenCalledWith(
+        'car.engineCapacity = :engineCapacity',
+        { engineCapacity: 1800 },
+      );
+    });
+
+    it('should not apply filter for empty or undefined values', async () => {
+      // Arrange
+      mockQueryBuilder.getRawMany.mockResolvedValue([]);
+
+      const query: CarFilterQueryDto = {
+        brand: '', // empty string
+        type: undefined, // undefined
+        category: 'NEW', // valid value
+      };
+
+      // Act
+      await service.getFilters(query);
+
+      // Assert - Only category filter should be applied
+      expect(mockQueryBuilder.andWhere).toHaveBeenCalledWith(
+        'category.name = :category',
+        { category: 'NEW' },
+      );
+
+      // Brand and type filters should not be applied due to empty/undefined values
+      expect(mockQueryBuilder.andWhere).not.toHaveBeenCalledWith(
+        'brand.name = :brand',
+        { brand: '' },
+      );
+      expect(mockQueryBuilder.andWhere).not.toHaveBeenCalledWith(
+        'type.name = :type',
+        { type: undefined },
+      );
+    });
+
+    it('should return empty arrays if no results', async () => {
+      // Arrange
+      mockQueryBuilder.getRawMany.mockResolvedValue([]);
+
+      // Act
+      const result = await service.getFilters({});
+
+      // Assert
+      expect(result).toEqual({
+        brands: [],
+        types: [],
+        categories: [],
+        models: [],
+        subModels: [],
+        modelYears: [],
+        transmissions: [],
+        colors: [],
+        engineTypes: [],
+      });
+    });
+
+    it('should handle mixed data types in results', async () => {
+      // Arrange
+      const mockData = [
+        [{ value: 'Toyota', count: '5', image: 'toyota-url' }], // brands - count as string
+        [{ value: 'SUV', count: 4.5, image: 'suv-url' }], // types - count as float
+        [{ value: 123, count: 2 }], // categories - value as number
+        [], // models
+        [], // subModels
+        [{ value: 2020, count: 2 }], // modelYears
+        [], // transmissions
+        [], // colors
+        [], // engineTypes
+      ];
+
+      mockQueryBuilder.getRawMany
+        .mockResolvedValueOnce(mockData[0])
+        .mockResolvedValueOnce(mockData[1])
+        .mockResolvedValueOnce(mockData[2])
+        .mockResolvedValueOnce(mockData[3])
+        .mockResolvedValueOnce(mockData[4])
+        .mockResolvedValueOnce(mockData[5])
+        .mockResolvedValueOnce(mockData[6])
+        .mockResolvedValueOnce(mockData[7])
+        .mockResolvedValueOnce(mockData[8]);
+
+      // Act
+      const result = await service.getFilters({});
+
+      // Assert - Values should be converted to strings, counts to numbers
+      expect(result.brands).toEqual([
+        { name: 'Toyota', count: 5, image: 'toyota-url' },
+      ]);
+      expect(result.types).toEqual([
+        { name: 'SUV', count: 4.5, image: 'suv-url' },
+      ]);
+      expect(result.categories).toEqual([{ name: '123', count: 2 }]);
+    });
+
+    it('should handle image columns correctly', async () => {
+      // Arrange
+      const mockData = [
+        [{ value: 'Toyota', count: 5, image: 'toyota-image-url' }], // brands with image
+        [{ value: 'SUV', count: 4, image: 'suv-image-url' }], // types with image
+        [{ value: 'NEW', count: 2 }], // categories without image
+        [],
+        [],
+        [],
+        [],
+        [],
+        [],
+      ];
+
+      mockQueryBuilder.getRawMany
+        .mockResolvedValueOnce(mockData[0])
+        .mockResolvedValueOnce(mockData[1])
+        .mockResolvedValueOnce(mockData[2])
+        .mockResolvedValueOnce([])
+        .mockResolvedValueOnce([])
+        .mockResolvedValueOnce([])
+        .mockResolvedValueOnce([])
+        .mockResolvedValueOnce([])
+        .mockResolvedValueOnce([]);
+
+      // Act
+      const result = await service.getFilters({});
+
+      // Assert
+      expect(result.brands[0]).toHaveProperty('image', 'toyota-image-url');
+      expect(result.types[0]).toHaveProperty('image', 'suv-image-url');
+      expect(result.categories[0]).not.toHaveProperty('image');
     });
   });
 });

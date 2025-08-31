@@ -11,7 +11,7 @@ export class EstimateRequestListResponseDto {
   modelYear: number;
   firstName: string;
   phoneNumber: string;
-  images: string[];
+  thumbnail: string;
   note: string;
   createdAt: Date;
   type: SalesRequestType;
@@ -24,7 +24,7 @@ export class EstimateRequestListResponseDto {
     this.modelYear = estimateRequest.modelYear;
     this.firstName = estimateRequest.firstName;
     this.phoneNumber = estimateRequest.phoneNumber;
-    this.images = estimateRequest.images;
+    this.thumbnail = estimateRequest.images[0];
     this.note = estimateRequest.note;
     this.createdAt = estimateRequest.createdAt;
     this.status = estimateRequest.status;

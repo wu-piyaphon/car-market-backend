@@ -9,6 +9,7 @@ async function bootstrap() {
     origin: [
       'http://localhost:5173',
       'https://car-market-admin-web.onrender.com',
+      'https://car-market-admin-web.vercel.app',
     ],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],

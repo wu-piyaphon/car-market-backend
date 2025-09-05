@@ -47,7 +47,7 @@ export class Car {
   @Column({ nullable: true })
   mileage: number;
 
-  @Column({ type: 'decimal', precision: 10, scale: 2 })
+  @Column({ type: 'decimal' })
   price: number;
 
   @Column('text', { array: true })

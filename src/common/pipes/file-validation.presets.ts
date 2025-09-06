@@ -6,12 +6,24 @@ import { FileValidationPipe } from '@/common/pipes';
 
 export const ImageFileValidationPipe = new FileValidationPipe({
   maxSize: MAX_IMAGE_SIZE,
-  allowedMimeTypes: ['image/jpeg', 'image/png', 'image/jpg', 'image/webp'],
+  allowedMimeTypes: [
+    'image/jpeg',
+    'image/png',
+    'image/jpg',
+    'image/webp',
+    'image/svg+xml',
+  ],
 });
 
 export const OptionalImageFileValidationPipe = new FileValidationPipe({
   maxSize: MAX_IMAGE_SIZE,
-  allowedMimeTypes: ['image/jpeg', 'image/png', 'image/jpg', 'image/webp'],
+  allowedMimeTypes: [
+    'image/jpeg',
+    'image/png',
+    'image/jpg',
+    'image/webp',
+    'image/svg+xml',
+  ],
   optional: true,
 });
 

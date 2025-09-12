@@ -11,6 +11,6 @@ export default registerAs(
     migrations: [__dirname + '/../migrations/*.{ts,js}'],
     migrationsRun: process.env.NODE_ENV === 'test',
     migrationsTableName: 'migrations',
-    synchronize: true,
+    synchronize: process.env.NODE_ENV === 'local',
   }),
 );

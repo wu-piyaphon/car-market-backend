@@ -1,99 +1,196 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Car Market - Backend API
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+[![My Skills](https://skillicons.dev/icons?i=nestjs,postgres,docker,postman,jest,aws)](https://skillicons.dev)
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
 
-## Description
+A robust RESTful API backend for a comprehensive car marketplace platform. Built with modern technologies and best practices, this system handles car listings, user authentication, selling requests, and car price estimation services.
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## 🌟 Key Features
 
-## Project setup
+### Authentication & Authorization
+- **JWT-based Authentication**: Secure user login/logout with refresh tokens
+- **Password Encryption**: bcrypt for secure password hashing
 
-```bash
-$ yarn install
+### Content Management System
+- **Comprehensive Car Listings**: Full CRUD operations for vehicle content
+- **Advanced Search & Filtering**: Multi-parameter car search capabilities
+- **Image Management**: AWS S3 integration for car and related options photos
+- **SEO-friendly URLs**: Slug-based car detail pages
+
+### Request Management
+- **Selling Requests**: Handle car consignment and direct sales
+- **Estimate Requests**: Car valuation and price estimation service including image attachments
+
+### Technical Excellence
+- **Clean Architecture**: Modular design with separation of concerns
+- **Type Safety**: Full TypeScript implementation
+- **Validation**: Comprehensive input validation with class-validator
+- **Database Relations**: Well-structured PostgreSQL schema with TypeORM
+- **Error Handling**: Centralized exception handling
+
+## ⚙️ Technology Stack
+
+### Backend Framework
+- **NestJS**: Progressive Node.js framework for scalable applications
+- **TypeScript**: Type-safe JavaScript development
+- **Express**: Underlying HTTP server framework
+
+### Database & ORM
+- **PostgreSQL**: Robust relational database
+- **TypeORM**: Feature-rich ORM with Active Record pattern
+
+### Cloud & Infrastructure
+- **AWS S3**: Secure file storage and management
+- **Docker**: Containerized deployment
+- **Docker Compose**: Multi-container orchestration
+
+### Security & Validation
+- **JWT**: JSON Web Tokens for authentication
+- **Passport**: Authentication middleware
+- **class-validator**: Decorator-based validation
+- **bcrypt**: Password hashing
+
+### Development Tools
+- **Jest**: Comprehensive testing framework
+- **ESLint**: Code quality and consistency
+- **Prettier**: Code formatting
+
+## 📁 Project Structure
+
+```
+src/
+├── auth/                 # Authentication & authorization
+├── car-brands/          # Car brand management
+├── car-categories/      # Car category management  
+├── car-types/           # Car type management
+├── cars/                # Car listings CRUD
+├── common/              # Shared utilities & services
+│   ├── aws-s3.service.ts    # AWS S3 integration
+│   ├── decorators/          # Custom decorators
+│   ├── enums/              # Application enums
+│   ├── interfaces/         # TypeScript interfaces
+│   └── pipes/              # Validation pipes
+├── config/              # Configuration management
+├── estimate-requests/   # Car valuation requests
+├── selling-requests/    # Car selling requests
+└── users/               # User management
 ```
 
-## Compile and run the project
+## 🚀 Getting Started
+
+### Prerequisites
+- **Node.js** (v22+)
+- **Yarn** package manager
+- **Docker & Docker Compose**
+- **PostgreSQL** (if running locally)
+
+### Installation
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/wu-piyaphon/car-market-backend.git
+   cd car-market-backend
+   ```
+
+2. **Install dependencies**
+   ```bash
+   yarn install
+   ```
+
+3. **Environment setup**
+   ```bash
+   cp .env.example .env.local
+   # Configure your environment variables
+   ```
+
+4. **Start with Docker (Recommended)**
+   ```bash
+   yarn dev
+   ```
+   This command starts both the PostgreSQL database and the application in development mode.
+
+### Available Scripts
 
 ```bash
-# development
-$ yarn run start
+# Development
+yarn dev              # Start with Docker Compose
+yarn start:dev        # Start in watch mode
+yarn start:debug      # Start in debug mode
 
-# watch mode
-$ yarn run start:dev
+# Production
+yarn build            # Build the application
+yarn start:prod       # Start production server
 
-# production mode
-$ yarn run start:prod
+# Testing
+yarn test             # Run unit tests
+yarn test:watch       # Run tests in watch mode
+yarn test:cov         # Run tests with coverage
+yarn test:e2e         # Run end-to-end tests
+
+# Code Quality
+yarn lint             # Run ESLint
+yarn format           # Format code with Prettier
 ```
 
-## Run tests
+## ✏️ API Endpoints
+
+### Authentication
+- `POST /auth/sign-up` - User registration
+- `POST /auth/sign-in` - User login
+- `POST /auth/refresh` - Refresh access token
+- `GET /auth/me` - Get current user profile
+
+### Car Management
+- `GET /cars` - List cars with pagination and filters
+- `GET /cars/:id` - Get car by ID
+- `GET /cars/slug/:slug` - Get car by slug
+- `POST /cars` - Create new car listing (Auth required)
+- `PUT /cars/:id` - Update car (Auth required)
+- `PATCH /cars/:id/activate` - Activate car listing (Auth required)
+- `PATCH /cars/:id/disable` - Disable car listing (Auth required)
+- `DELETE /cars/:id` - Delete car (Auth required)
+
+### Option Management
+- `GET /car-brands` - List all car brands
+- `GET /car-categories` - List car categories
+- `GET /car-types` - List car types
+
+### Requests
+- `POST /selling-requests` - Submit selling request
+- `GET /selling-requests` - List selling requests (Auth required)
+- `PUT /selling-requests/:id` - Update selling request (Auth required)
+
+- `POST /estimate-requests` - Submit estimate request
+- `GET /estimate-requests` - List estimate requests (Auth required)
+- `PUT /estimate-requests/:id` - Update estimate request (Auth required)
+
+## 🧪 Testing
+
+The application includes comprehensive testing:
 
 ```bash
-# unit tests
-$ yarn run test
+# Unit tests
+yarn test
 
-# e2e tests
-$ yarn run test:e2e
-
-# test coverage
-$ yarn run test:cov
+# Test coverage
+yarn test:cov
 ```
 
-## Deployment
+## ✨ Architecture Highlights
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+### Clean Architecture Principles
+- **Modular Design**: Each feature is encapsulated in its own module
+- **Dependency Injection**: Leveraging NestJS's powerful DI container
+- **Single Responsibility**: Each service handles one specific domain
+- **Interface Segregation**: Well-defined DTOs and interfaces
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+### Database Design
+- **Normalized Schema**: Efficient relational database structure
+- **Entity Relationships**: Properly mapped associations
+- **Migration System**: Version-controlled schema changes
 
-```bash
-$ yarn install -g mau
-$ mau deploy
-```
-
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
-
-## Resources
-
-Check out a few resources that may come in handy when working with NestJS:
-
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+### Security Measures
+- **Input Validation**: Comprehensive request validation
+- **SQL Injection Prevention**: TypeORM query builder protection
+- **CORS Configuration**: Secure cross-origin resource sharing
+- **Authentication Guards**: Route-level protection

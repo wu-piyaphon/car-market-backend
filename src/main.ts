@@ -7,6 +7,7 @@ async function bootstrap() {
 
   app.enableCors({
     origin: [
+      'http://localhost:3000',
       'http://localhost:5173',
       'https://car-market-admin-web.onrender.com',
       'https://car-market-admin-web.vercel.app',
@@ -16,6 +17,6 @@ async function bootstrap() {
   });
 
   app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
-  await app.listen(process.env.PORT ?? 3000);
+  await app.listen(process.env.PORT ?? 3001);
 }
 bootstrap();

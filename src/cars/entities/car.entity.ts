@@ -4,6 +4,7 @@ import { CarType } from '@/car-types/entities/car-type.entity';
 import { EngineType } from '@/common/enums/engine-type.enum';
 import { SalesRequestType } from '@/common/enums/request.enum';
 import { Transmission } from '@/common/enums/transmission.enum';
+import { numericTransformer } from '@/common/utils/transform.utils';
 import { User } from '@/users/user.entity';
 import {
   Column,
@@ -47,7 +48,10 @@ export class Car {
   @Column({ nullable: true })
   mileage: number;
 
-  @Column({ type: 'decimal' })
+  @Column({
+    type: 'decimal',
+    transformer: numericTransformer,
+  })
   price: number;
 
   @Column('text', { array: true })

@@ -13,3 +13,8 @@ export function toNumber(value: any): number | undefined {
   const num = Number(value);
   return isNaN(num) ? undefined : num;
 }
+
+export const numericTransformer = {
+  to: (value: number): number => value,
+  from: (value: string): number => parseFloat(value),
+};

@@ -46,7 +46,7 @@ const databaseConfig = {
   ssl:
     process.env.SSL === 'true'
       ? {
-          rejectUnauthorized: true,
+          rejectUnauthorized: false,
           ca: fs.existsSync(RDS_CA_PATH)
             ? fs.readFileSync(RDS_CA_PATH).toString()
             : undefined,

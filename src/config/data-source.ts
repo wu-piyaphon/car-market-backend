@@ -1,4 +1,4 @@
-import { resolvePath } from '@/common/utils/path.utils';
+import { resolvePath } from '../common/utils/path.utils';
 import { registerAs } from '@nestjs/config';
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { config } from 'dotenv';

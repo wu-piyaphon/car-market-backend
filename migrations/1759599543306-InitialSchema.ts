@@ -5,6 +5,26 @@ export class InitialSchema1759599543306 implements MigrationInterface {
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(
+      `CREATE TYPE "public"."estimate_requests_status_enum" AS ENUM('NOT_CONTACTED', 'CONTACTED')`,
+    );
+    await queryRunner.query(
+      `CREATE TYPE "public"."cars_transmission_enum" AS ENUM('MANUAL', 'AUTOMATIC')`,
+    );
+    await queryRunner.query(
+      `CREATE TYPE "public"."cars_engine_type_enum" AS ENUM('GASOLINE', 'DIESEL', 'HYBRID', 'ELECTRIC')`,
+    );
+    await queryRunner.query(
+      `CREATE TYPE "public"."cars_sales_type_enum" AS ENUM('OWNER', 'CONSIGNMENT')`,
+    );
+    await queryRunner.query(
+      `CREATE TYPE "public"."selling_requests_type_enum" AS ENUM('OWNER', 'CONSIGNMENT')`,
+    );
+    await queryRunner.query(
+      `CREATE TYPE "public"."selling_requests_status_enum" AS ENUM('NOT_CONTACTED', 'CONTACTED')`,
+    );
+
+    // Create tables
+    await queryRunner.query(
       `CREATE TABLE "estimate_requests" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "model" character varying NOT NULL, "model_year" integer NOT NULL, "first_name" character varying NOT NULL, "phone_number" character varying NOT NULL, "line_id" character varying, "images" text array NOT NULL, "note" character varying NOT NULL DEFAULT '', "installments_in_month" integer, "status" "public"."estimate_requests_status_enum" NOT NULL DEFAULT 'NOT_CONTACTED', "created_at" TIMESTAMP NOT NULL DEFAULT now(), "updated_at" TIMESTAMP NOT NULL DEFAULT now(), "car_brand_id" uuid, "updated_by" uuid, CONSTRAINT "PK_bfb281cb94ddfe4ab0341acd9d8" PRIMARY KEY ("id"))`,
     );
     await queryRunner.query(
@@ -83,5 +103,16 @@ export class InitialSchema1759599543306 implements MigrationInterface {
     await queryRunner.query(`DROP TABLE "car_categories"`);
     await queryRunner.query(`DROP TABLE "car_brands"`);
     await queryRunner.query(`DROP TABLE "estimate_requests"`);
+
+    await queryRunner.query(
+      `DROP TYPE "public"."selling_requests_status_enum"`,
+    );
+    await queryRunner.query(`DROP TYPE "public"."selling_requests_type_enum"`);
+    await queryRunner.query(`DROP TYPE "public"."cars_sales_type_enum"`);
+    await queryRunner.query(`DROP TYPE "public"."cars_engine_type_enum"`);
+    await queryRunner.query(`DROP TYPE "public"."cars_transmission_enum"`);
+    await queryRunner.query(
+      `DROP TYPE "public"."estimate_requests_status_enum"`,
+    );
   }
 }

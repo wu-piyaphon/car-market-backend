@@ -1,21 +1,18 @@
-import * as fs from 'fs';
-import * as path from 'path';
-import { DataSource } from 'typeorm';
-import { config } from 'dotenv';
+import { resolvePath } from '@/common/utils/path.utils';
 import { registerAs } from '@nestjs/config';
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
+import { config } from 'dotenv';
+import * as fs from 'fs';
 import { register } from 'tsconfig-paths';
+import { DataSource } from 'typeorm';
 
-// ----------------------------------------------------------------------
-
-const RDS_CA_PATH = path.join(__dirname, '..', 'certs', 'rds-ca-bundle.pem');
-
-// ----------------------------------------------------------------------
+// SSL certificate path
+const RDS_CA_PATH = resolvePath('..', 'certs', 'rds-ca-bundle.pem');
 
 // Register TypeScript path mappings (needed for @/ imports in entities)
 try {
   register({
-    baseUrl: path.join(__dirname, '..'),
+    baseUrl: resolvePath('..'),
     paths: {
       '@/*': ['./*'],
     },
@@ -29,7 +26,6 @@ if (process.env.NODE_ENV !== 'production') {
   const envFile = process.env.NODE_ENV
     ? `.env.${process.env.NODE_ENV}`
     : '.env.local';
-
   config({ path: envFile });
 }
 
@@ -41,11 +37,13 @@ const databaseConfig = {
     process.env.SSL === 'true'
       ? {
           rejectUnauthorized: true,
-          ca: fs.readFileSync(RDS_CA_PATH).toString(),
+          ca: fs.existsSync(RDS_CA_PATH)
+            ? fs.readFileSync(RDS_CA_PATH).toString()
+            : undefined,
         }
       : false,
-  entities: [path.join(__dirname, '..', '**', '*.entity{.ts,.js}')],
-  migrations: [path.join(__dirname, '..', '..', 'migrations', '*{.ts,.js}')],
+  entities: [resolvePath('..', '**', '*.entity{.ts,.js}')],
+  migrations: [resolvePath('..', 'migrations', '*{.ts,.js}')],
   migrationsTableName: 'migrations',
   synchronize: false,
 };

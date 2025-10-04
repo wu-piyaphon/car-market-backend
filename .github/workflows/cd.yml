@@ -11,6 +11,7 @@ jobs:
   build:
 
     runs-on: self-hosted
+    environment: production
 
     steps:
     - name: Pull Docker image
@@ -18,7 +19,24 @@ jobs:
     - name: Delete existing container
       run: sudo docker rm -f car-market-app-container || true
     - name: Run the Docker container
-      run: sudo docker run -d -p 8080:8080 --name car-market-app-container wupiyaphon/car-market-backend
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        AWS_REGION: ${{ secrets.AWS_REGION }}
+        AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
+        JWT_SECRET: ${{ secrets.JWT_SECRET }}
+        DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      run: |
+        sudo docker run -d -p 8080:8080 \
+          -e AWS_ACCESS_KEY_ID="$AWS_ACCESS_KEY_ID" \
+          -e AWS_SECRET_ACCESS_KEY="$AWS_SECRET_ACCESS_KEY" \
+          -e AWS_REGION="$AWS_REGION" \
+          -e AWS_S3_BUCKET="$AWS_S3_BUCKET" \
+          -e JWT_SECRET="$JWT_SECRET" \
+          -e DATABASE_URL="$DATABASE_URL" \
+          -e NODE_ENV="production" \
+          --name car-market-app-container \
+          wupiyaphon/car-market-backend
     - name: Wait for container to start
       run: sleep 10
     - name: Check if container is running

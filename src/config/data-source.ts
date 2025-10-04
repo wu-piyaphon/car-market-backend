@@ -6,7 +6,7 @@ import { register } from 'tsconfig-paths';
 import { DataSource } from 'typeorm';
 import * as path from 'path';
 
-export const resolvePath = (...pathSegments: string[]): string => {
+const resolvePath = (...pathSegments: string[]): string => {
   try {
     // Try __dirname first (works in local development)
     return path.join(__dirname, ...pathSegments);

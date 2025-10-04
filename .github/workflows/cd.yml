@@ -74,3 +74,13 @@ jobs:
             sudo docker logs ${{ env.CONTAINER_NAME }}
             exit 1
           fi
+
+      - name: Clean up Docker resources
+        if: always()
+        run: |
+          echo "Cleaning up unused Docker resources..."
+          sudo docker image prune -af --filter "until=24h"
+          sudo docker container prune -f
+          sudo docker volume prune -f
+          sudo docker network prune -f
+          echo "✅ Docker cleanup completed"

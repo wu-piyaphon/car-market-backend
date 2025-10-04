@@ -17,8 +17,10 @@ try {
       '@/*': ['./*'],
     },
   });
-} catch {
-  // Path registration failed on production, because tsconfig-paths cannot find the tsconfig.json file
+} catch (error) {
+  // Path registration failed - this is expected in production
+  // where tsconfig-paths cannot find the tsconfig.json file
+  console.warn('Failed to register TypeScript path mappings:', error.message);
 }
 
 // Load environment variables (only if not in production)

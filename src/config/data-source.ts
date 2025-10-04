@@ -6,29 +6,19 @@ import { register } from 'tsconfig-paths';
 import { DataSource } from 'typeorm';
 import * as path from 'path';
 
-const resolvePath = (...pathSegments: string[]): string => {
-  try {
-    // Try __dirname first (works in local development)
-    return path.join(__dirname, ...pathSegments);
-  } catch {
-    // Fallback to process.cwd() for production
-    return path.resolve(process.cwd(), 'src', ...pathSegments);
-  }
-};
-
 // SSL certificate path
-const RDS_CA_PATH = resolvePath('..', 'certs', 'rds-ca-bundle.pem');
+const RDS_CA_PATH = path.join(__dirname, '..', 'certs', 'rds-ca-bundle.pem');
 
 // Register TypeScript path mappings (needed for @/ imports in entities)
 try {
   register({
-    baseUrl: resolvePath('..'),
+    baseUrl: path.join(__dirname, '..'),
     paths: {
       '@/*': ['./*'],
     },
   });
 } catch {
-  // Path registration might fail in some environments, continue silently
+  // Path registration failed on production, because tsconfig-paths cannot find the tsconfig.json file
 }
 
 // Load environment variables (only if not in production)
@@ -52,8 +42,8 @@ const databaseConfig = {
             : undefined,
         }
       : false,
-  entities: [resolvePath('..', '**', '*.entity{.ts,.js}')],
-  migrations: [resolvePath('..', 'migrations', '*{.ts,.js}')],
+  entities: [path.join(__dirname, '..', '**', '*.entity{.ts,.js}')],
+  migrations: [path.join(__dirname, '..', 'migrations', '*{.ts,.js}')],
   migrationsTableName: 'migrations',
   synchronize: false,
 };

@@ -26,4 +26,4 @@ COPY package.json ./
 EXPOSE 8080
 
 # Command to run the application
-CMD [ "node", "dist/src/main" ]
+CMD [ "node", "--experimental-require-module", "dist/src/main" ]

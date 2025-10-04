@@ -2,33 +2,34 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { DataSource } from 'typeorm';
 import { config } from 'dotenv';
-import { register } from 'tsconfig-paths';
 import { registerAs } from '@nestjs/config';
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
+import { register } from 'tsconfig-paths';
 
-// Register TypeScript path mappings
-register({
-  baseUrl: path.join(__dirname, '..'),
-  paths: {
-    '@/*': ['./*'],
-  },
-});
-
-// Load environment variables based on NODE_ENV
-const envFile = process.env.NODE_ENV
-  ? `.env.${process.env.NODE_ENV}`
-  : '.env.local';
-
-config({ path: envFile });
-
-// Fallback to .env if specific env file doesn't exist
-if (!process.env.DATABASE_URL) {
-  config({ path: '.env.local' });
-}
+// ----------------------------------------------------------------------
 
 const RDS_CA_PATH = path.join(__dirname, '..', 'certs', 'rds-ca-bundle.pem');
 
-// Common database configuration
+// ----------------------------------------------------------------------
+
+// Register TypeScript path mappings (only in non-production)
+if (process.env.NODE_ENV !== 'production') {
+  register({
+    baseUrl: path.join(__dirname, '..'),
+    paths: {
+      '@/*': ['./*'],
+    },
+  });
+
+  // Load environment variables
+  const envFile = process.env.NODE_ENV
+    ? `.env.${process.env.NODE_ENV}`
+    : '.env.local';
+
+  config({ path: envFile });
+}
+
+// Database configuration
 const databaseConfig = {
   type: 'postgres' as const,
   url: process.env.DATABASE_URL,
@@ -48,7 +49,7 @@ const databaseConfig = {
 // DataSource for TypeORM CLI
 const AppDataSource = new DataSource(databaseConfig);
 
-// NestJS configuration function
+// NestJS configuration application
 export const DatabaseConfig = registerAs(
   'database',
   (): TypeOrmModuleOptions => ({

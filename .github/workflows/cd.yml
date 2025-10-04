@@ -19,3 +19,16 @@ jobs:
       run: sudo docker rm -f car-market-app-container || true
     - name: Run the Docker container
       run: sudo docker run -d -p 8080:8080 --name car-market-app-container wupiyaphon/car-market-backend
+    - name: Wait for container to start
+      run: sleep 10
+    - name: Check if container is running
+      run: |
+        if sudo docker ps --filter "name=car-market-app-container" --filter "status=running" | grep -q car-market-app-container; then
+          echo "Container is running successfully"
+          sudo docker ps --filter "name=car-market-app-container"
+        else
+          echo "Container failed to start or is not running"
+          echo "Container logs:"
+          sudo docker logs car-market-app-container
+          exit 1
+        fi

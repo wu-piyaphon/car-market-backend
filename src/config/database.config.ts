@@ -1,7 +1,7 @@
 import * as fs from 'fs';
+import * as path from 'path';
 import { registerAs } from '@nestjs/config';
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
-import path from 'path';
 
 // ----------------------------------------------------------------------
 

@@ -12,16 +12,20 @@ const RDS_CA_PATH = path.join(__dirname, '..', 'certs', 'rds-ca-bundle.pem');
 
 // ----------------------------------------------------------------------
 
-// Register TypeScript path mappings (only in non-production)
-if (process.env.NODE_ENV !== 'production') {
+// Register TypeScript path mappings (needed for @/ imports in entities)
+try {
   register({
     baseUrl: path.join(__dirname, '..'),
     paths: {
       '@/*': ['./*'],
     },
   });
+} catch {
+  // Path registration might fail in some environments, continue silently
+}
 
-  // Load environment variables
+// Load environment variables (only if not in production)
+if (process.env.NODE_ENV !== 'production') {
   const envFile = process.env.NODE_ENV
     ? `.env.${process.env.NODE_ENV}`
     : '.env.local';

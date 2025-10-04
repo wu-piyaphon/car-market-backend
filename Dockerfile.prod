@@ -11,7 +11,7 @@ COPY . .
 RUN yarn build
 
 # Stage 2: Create the production image
-FROM node:20-alpine AS production
+FROM node:22-alpine AS production
 
 WORKDIR /app
 
@@ -19,6 +19,8 @@ WORKDIR /app
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/src/certs ./dist/certs
+COPY --from=builder /app/src/config/data-source.ts ./src/config/data-source.ts
+COPY --from=builder /app/migrations ./migrations
 COPY package.json ./
 
 # Expose the port your NestJS application listens on

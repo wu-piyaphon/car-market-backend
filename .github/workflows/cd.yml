@@ -25,6 +25,7 @@ jobs:
           JWT_SECRET: ${{ secrets.JWT_SECRET }}
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           SSL: ${{ vars.SSL }}
+          PORT: 8080
         run: |
           sudo docker run -d -p 8080:8080 \
             -e AWS_ACCESS_KEY_ID="$AWS_ACCESS_KEY_ID" \
@@ -34,6 +35,7 @@ jobs:
             -e JWT_SECRET="$JWT_SECRET" \
             -e DATABASE_URL="$DATABASE_URL" \
             -e SSL="$SSL" \
+            -e PORT="$PORT" \
             -e NODE_ENV="production" \
             --name car-market-app-container \
             wupiyaphon/car-market-backend

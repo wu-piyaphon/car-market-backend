@@ -40,7 +40,7 @@ export class CarListQueryDto {
   subModel?: string;
 
   @IsOptional()
-  @IsEnum(EngineType)
+  @IsEnum(Transmission)
   @Transform(({ value }) => (!value ? undefined : value))
   @ApiPropertyOptional({ description: 'Car transmission', enum: Transmission })
   transmission?: Transmission;

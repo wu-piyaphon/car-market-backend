@@ -1,19 +1,12 @@
 import { toNumber } from '@/common/utils/transform.utils';
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
-import {
-  IsNotEmpty,
-  IsNumber,
-  IsOptional,
-  IsString,
-  IsUUID,
-} from 'class-validator';
+import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class CreateEstimateRequestDto {
-  @IsUUID()
   @IsNotEmpty()
-  @ApiProperty({ description: 'Car brand UUID' })
-  brandId: string;
+  @ApiProperty({ description: 'Car brand' })
+  brand: string;
 
   @IsString()
   @IsNotEmpty()

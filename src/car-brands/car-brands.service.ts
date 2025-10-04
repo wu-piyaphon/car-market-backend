@@ -30,6 +30,10 @@ export class CarBrandsService {
     return brand;
   }
 
+  async findByName(name: string): Promise<CarBrand> {
+    return this.carBrandRepository.findOne({ where: { name } });
+  }
+
   async create(
     createCarBrandDto: CreateCarBrandDto,
     file: Express.Multer.File,

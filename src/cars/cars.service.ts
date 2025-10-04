@@ -5,6 +5,12 @@ import { CreateCarDto } from '@/cars/dtos/create-car.dto';
 import { UpdateCarDto } from '@/cars/dtos/update-car.dto';
 import { Car } from '@/cars/entities/car.entity';
 import { AwsS3Service } from '@/common/aws-s3.service';
+import {
+  CAR_TYPE_TRANSLATIONS,
+  COLOR_TRANSLATIONS,
+  ENGINE_TYPE_TRANSLATIONS,
+  TRANSMISSION_TRANSLATIONS,
+} from '@/common/constants/translation.constants';
 import { PaginationResponseDto } from '@/common/dtos/pagination-response.dto';
 import { generateCarSlug } from '@/common/utils/slug.utils';
 import { Injectable, NotFoundException } from '@nestjs/common';
@@ -116,14 +122,14 @@ export class CarsService {
         minMileage: minMileage ?? 0,
       });
       qb.andWhere('car.mileage <= :maxMileage', {
-        maxMileage: maxMileage ?? Number.MAX_SAFE_INTEGER,
+        maxMileage: maxMileage ?? 10000000,
       });
     }
 
     if (minPrice !== undefined || maxPrice !== undefined) {
       qb.andWhere('car.price >= :minPrice', { minPrice: minPrice ?? 0 });
       qb.andWhere('car.price <= :maxPrice', {
-        maxPrice: maxPrice ?? Number.MAX_SAFE_INTEGER,
+        maxPrice: maxPrice ?? 10000000,
       });
     }
 
@@ -169,7 +175,16 @@ export class CarsService {
       throw new NotFoundException('Car not found');
     }
 
-    return car;
+    const translatedCarData = {
+      ...car,
+      color: COLOR_TRANSLATIONS[car.color] || car.color,
+      transmission:
+        TRANSMISSION_TRANSLATIONS[car.transmission] || car.transmission,
+      engineType: ENGINE_TYPE_TRANSLATIONS[car.engineType] || car.engineType,
+      type: CAR_TYPE_TRANSLATIONS[car.type.name] || car.type.name,
+    };
+
+    return translatedCarData;
   }
 
   async update(

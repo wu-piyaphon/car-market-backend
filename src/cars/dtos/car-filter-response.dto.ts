@@ -11,7 +11,11 @@ import {
 
 export class FilterOption {
   @IsString()
-  @ApiProperty({ description: 'The value of the filter' })
+  @ApiProperty({ description: 'The id of the filter' })
+  id: string;
+
+  @IsString()
+  @ApiProperty({ description: 'The name of the filter' })
   name: string;
 
   @IsNumber()
@@ -70,4 +74,9 @@ export class CarFilterResponseDto {
   @ValidateNested({ each: true })
   @Type(() => FilterOption)
   engineTypes: FilterOption[];
+
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => FilterOption)
+  engineCapacities: FilterOption[];
 }

@@ -1,3 +1,4 @@
+import { CarBrandsService } from '@/car-brands/car-brands.service';
 import { AwsS3Service } from '@/common/aws-s3.service';
 import { PaginationResponseDto } from '@/common/dtos/pagination-response.dto';
 import { CreateEstimateRequestDto } from '@/estimate-requests/dtos/create-estimate-request.dto';
@@ -14,6 +15,7 @@ export class EstimateRequestsService {
   constructor(
     @InjectRepository(EstimateRequest)
     private estimateRequestsRepository: Repository<EstimateRequest>,
+    private carBrandsService: CarBrandsService,
     private awsS3Service: AwsS3Service,
   ) {}
 
@@ -27,12 +29,12 @@ export class EstimateRequestsService {
       ),
     );
 
+    const foundBrand = await this.carBrandsService.findByName(request.brand);
+
     const estimateRequest = this.estimateRequestsRepository.create({
       ...request,
       images,
-      brand: {
-        id: request.brandId,
-      },
+      brand: foundBrand,
     });
 
     return this.estimateRequestsRepository.save(estimateRequest);
@@ -98,11 +100,14 @@ export class EstimateRequestsService {
     userId: string,
   ): Promise<EstimateRequest> {
     const estimateRequestToUpdate = await this.findOneById(id);
-
-    this.estimateRequestsRepository.merge(
-      estimateRequestToUpdate,
-      updateEstimateRequestDto,
+    const foundBrand = await this.carBrandsService.findByName(
+      updateEstimateRequestDto.brand,
     );
+
+    this.estimateRequestsRepository.merge(estimateRequestToUpdate, {
+      ...updateEstimateRequestDto,
+      brand: foundBrand,
+    });
 
     return this.estimateRequestsRepository.save({
       ...estimateRequestToUpdate,

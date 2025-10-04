@@ -4,6 +4,15 @@ import { Repository } from 'typeorm';
 import { CarFilterQueryDto } from '../dtos/car-filter-query.dto';
 import { CarFilterResponseDto } from '../dtos/car-filter-response.dto';
 import { Car } from '../entities/car.entity';
+import {
+  TRANSMISSION_TRANSLATIONS,
+  COLOR_TRANSLATIONS,
+  ENGINE_TYPE_TRANSLATIONS,
+  CAR_CATEGORY_TRANSLATIONS,
+  CAR_TYPE_TRANSLATIONS,
+} from '@/common/constants/translation.constants';
+import { Transmission } from '@/common/enums/transmission.enum';
+import { EngineType } from '@/common/enums/engine-type.enum';
 
 @Injectable()
 export class CarFilterService {
@@ -34,17 +43,12 @@ export class CarFilterService {
       },
     ];
 
-    /*
-     * Helper to get distinct values and counts for a column
-     * This approach goes through 9 round-trips to the database
-     *
-     * Optimize attempt 1: Used raw SQL with UNION ALL to combine the queries and use a single round-trip,
-     * but didn't work because each filter must be self-exclusion (not filtering itself)
-     */
     const getDistinctWithCount = async (
       column: string,
       imageColumn?: string,
-    ): Promise<Array<{ name: string; count: number; image?: string }>> => {
+    ): Promise<
+      Array<{ id: string; name: string; count: number; image?: string }>
+    > => {
       const subQb = this.carsRepository
         .createQueryBuilder('car')
         .leftJoin('car.brand', 'brand')
@@ -72,6 +76,7 @@ export class CarFilterService {
       return rows
         .filter((row) => row.value !== null)
         .map((row) => ({
+          id: String(row.value),
           name: String(row.value),
           count: Number(row.count),
           ...(row.image ? { image: row.image } : {}),
@@ -81,14 +86,15 @@ export class CarFilterService {
     // Get all filter options in parallel
     const [
       brands,
-      types,
-      categories,
+      rawTypes,
+      rawCategories,
       models,
       subModels,
       modelYears,
-      transmissions,
-      colors,
-      engineTypes,
+      rawTransmissions,
+      rawColors,
+      rawEngineTypes,
+      rawEngineCapacities,
     ] = await Promise.all([
       getDistinctWithCount('brand.name', 'brand.image'),
       getDistinctWithCount('type.name', 'type.image'),
@@ -99,11 +105,48 @@ export class CarFilterService {
       getDistinctWithCount('car.transmission'),
       getDistinctWithCount('car.color'),
       getDistinctWithCount('car.engineType'),
+      getDistinctWithCount('car.engineCapacity'),
     ]);
 
+    // Map keys to display names
+    const types = rawTypes.map((type) => ({
+      ...type,
+      name: CAR_TYPE_TRANSLATIONS[type.id] || type.id,
+    }));
+
+    const categories = rawCategories.map((category) => ({
+      ...category,
+      name: CAR_CATEGORY_TRANSLATIONS[category.id] || category.id,
+    }));
+
+    const colors = rawColors.map((color) => ({
+      ...color,
+      name: COLOR_TRANSLATIONS[color.id] || color.id,
+    }));
+
+    const transmissions = rawTransmissions.map((transmission) => ({
+      ...transmission,
+      name:
+        TRANSMISSION_TRANSLATIONS[transmission.id as Transmission] ||
+        transmission.id,
+    }));
+
+    const engineTypes = rawEngineTypes.map((engineType) => ({
+      ...engineType,
+      name:
+        ENGINE_TYPE_TRANSLATIONS[engineType.id as EngineType] || engineType.id,
+    }));
+
+    const engineCapacities = rawEngineCapacities
+      .map((ec) => ({
+        ...ec,
+        name: `${ec.id} CC`,
+      }))
+      .sort((a, b) => Number(a.id) - Number(b.id));
+
     return {
-      brands: brands,
-      types: types,
+      brands,
+      types,
       categories,
       models,
       subModels,
@@ -111,6 +154,7 @@ export class CarFilterService {
       transmissions,
       colors,
       engineTypes,
+      engineCapacities,
     };
   }
 }

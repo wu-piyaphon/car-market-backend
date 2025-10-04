@@ -10,7 +10,8 @@ import { UsersModule } from '@/users/users.module';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { AppConfig, DatabaseConfig } from './config';
+import { AppConfig } from './config';
+import { DatabaseConfig } from './config/data-source';
 
 @Module({
   imports: [

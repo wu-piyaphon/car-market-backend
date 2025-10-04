@@ -18,6 +18,7 @@ WORKDIR /app
 # Copy only production dependencies and compiled build artifacts
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/src/certs ./dist/certs
 COPY package.json ./
 
 # Expose the port your NestJS application listens on

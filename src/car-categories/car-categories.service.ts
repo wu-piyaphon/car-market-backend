@@ -34,6 +34,20 @@ export class CarCategoriesService {
   async create(
     createCarCategoryDto: CreateCarCategoryDto,
   ): Promise<CarCategory> {
+    const existingCategory = await this.carCategoryRepository.findOne({
+      where: { id: createCarCategoryDto.id },
+      withDeleted: true,
+    });
+
+    if (existingCategory && !existingCategory.deletedAt) {
+      throw new BadRequestException('Car category already exists');
+    }
+
+    if (existingCategory && existingCategory.deletedAt) {
+      await this.restore(existingCategory.id);
+      return await this.update(existingCategory.id, createCarCategoryDto);
+    }
+
     const category = this.carCategoryRepository.create(createCarCategoryDto);
     try {
       return await this.carCategoryRepository.save(category);
@@ -65,5 +79,21 @@ export class CarCategoriesService {
   async remove(id: string): Promise<void> {
     const category = await this.findOne(id);
     await this.carCategoryRepository.remove(category);
+  }
+
+  async restore(id: string): Promise<CarCategory> {
+    const category = await this.carCategoryRepository.findOne({
+      where: { id },
+      withDeleted: true,
+    });
+
+    if (!category) {
+      throw new NotFoundException('Car category not found');
+    }
+    if (!category.deletedAt) {
+      throw new BadRequestException('Car category is not deleted');
+    }
+    await this.carCategoryRepository.restore(id);
+    return this.findOne(id);
   }
 }

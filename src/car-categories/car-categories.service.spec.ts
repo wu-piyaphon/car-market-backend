@@ -95,6 +95,7 @@ describe('CarCategoriesService', () => {
 
   describe('create', () => {
     const createCarCategoryDto: CreateCarCategoryDto = {
+      id: 'HATCHBACK',
       name: 'HATCHBACK',
     };
 

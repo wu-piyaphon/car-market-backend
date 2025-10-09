@@ -116,6 +116,7 @@ describe('CarCategoriesController', () => {
   describe('create', () => {
     it('should create a car category', async () => {
       const createCarCategoryDto: CreateCarCategoryDto = {
+        id: 'HATCHBACK',
         name: 'HATCHBACK',
       };
       const expectedResult: CarCategory = {
@@ -135,6 +136,7 @@ describe('CarCategoriesController', () => {
 
     it('should create a car category with different name', async () => {
       const createCarCategoryDto: CreateCarCategoryDto = {
+        id: 'COUPE',
         name: 'COUPE',
       };
       const expectedResult: CarCategory = {

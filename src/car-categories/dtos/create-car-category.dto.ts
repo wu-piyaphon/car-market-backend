@@ -4,5 +4,10 @@ export class CreateCarCategoryDto {
   @IsString()
   @IsNotEmpty()
   @IsUppercase()
+  id: string;
+
+  @IsString()
+  @IsNotEmpty()
+  @IsUppercase()
   name: string;
 }

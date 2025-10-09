@@ -36,9 +36,7 @@ export class ChangeCarBrandIdToVarchar1759990062087
       `ALTER TABLE "cars" ADD "car_brand_id" character varying`,
     );
     await queryRunner.query(`ALTER TABLE "users" DROP COLUMN "role"`);
-    await queryRunner.query(
-      `CREATE TYPE "public"."users_role_enum" AS ENUM('ADMIN', 'USER')`,
-    );
+
     await queryRunner.query(
       `ALTER TABLE "users" ADD "role" "public"."users_role_enum" NOT NULL`,
     );

@@ -8,7 +8,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { IsNull, Repository } from 'typeorm';
 
 @Injectable()
 export class CarBrandsService {
@@ -19,11 +19,15 @@ export class CarBrandsService {
   ) {}
 
   async findAll(): Promise<CarBrand[]> {
-    return this.carBrandRepository.find();
+    return this.carBrandRepository.find({
+      where: { deletedAt: IsNull() },
+    });
   }
 
   async findOne(id: string): Promise<CarBrand> {
-    const brand = await this.carBrandRepository.findOne({ where: { id } });
+    const brand = await this.carBrandRepository.findOne({
+      where: { id, deletedAt: IsNull() },
+    });
     if (!brand) {
       throw new NotFoundException('Car brand not found');
     }
@@ -31,19 +35,36 @@ export class CarBrandsService {
   }
 
   async findByName(name: string): Promise<CarBrand> {
-    return this.carBrandRepository.findOne({ where: { name } });
+    return this.carBrandRepository.findOne({
+      where: { name, deletedAt: IsNull() },
+    });
   }
 
   async create(
     createCarBrandDto: CreateCarBrandDto,
     file: Express.Multer.File,
   ): Promise<CarBrand> {
+    const existingBrand = await this.carBrandRepository.findOne({
+      where: { id: createCarBrandDto.id },
+      withDeleted: true,
+    });
+
+    if (existingBrand && !existingBrand.deletedAt) {
+      throw new BadRequestException('Car brand already exists');
+    }
+
     const image = await this.awsS3Service.uploadFile(file, 'car-brands');
+
+    if (existingBrand && existingBrand.deletedAt) {
+      await this.restore(existingBrand.id);
+      return await this.update(existingBrand.id, createCarBrandDto, file);
+    }
 
     const brand = this.carBrandRepository.create({
       ...createCarBrandDto,
       image,
     });
+
     try {
       return await this.carBrandRepository.save(brand);
     } catch (error) {
@@ -80,6 +101,35 @@ export class CarBrandsService {
 
   async remove(id: string): Promise<void> {
     const brand = await this.findOne(id);
+    await this.carBrandRepository.softRemove(brand);
+  }
+
+  async restore(id: string): Promise<CarBrand> {
+    const brand = await this.carBrandRepository.findOne({
+      where: { id },
+      withDeleted: true,
+    });
+
+    if (!brand) {
+      throw new NotFoundException('Car brand not found');
+    }
+    if (!brand.deletedAt) {
+      throw new BadRequestException('Car brand is not deleted');
+    }
+    await this.carBrandRepository.restore(id);
+    return this.findOne(id);
+  }
+
+  async hardDelete(id: string): Promise<void> {
+    const brand = await this.carBrandRepository.findOne({
+      where: { id },
+      withDeleted: true,
+    });
+
+    if (!brand) {
+      throw new NotFoundException('Car brand not found');
+    }
+
     await this.awsS3Service.deleteFile(brand.image);
     await this.carBrandRepository.remove(brand);
   }

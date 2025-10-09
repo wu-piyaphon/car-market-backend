@@ -1,10 +1,10 @@
 import { Car } from '@/cars/entities/car.entity';
 import { EstimateRequest } from '@/estimate-requests/entities/estimate-request.entity';
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, DeleteDateColumn, Entity, OneToMany } from 'typeorm';
 
 @Entity('car_brands')
 export class CarBrand {
-  @PrimaryGeneratedColumn('uuid')
+  @Column({ primary: true, unique: true })
   id: string;
 
   @Column()
@@ -12,6 +12,9 @@ export class CarBrand {
 
   @Column({ unique: true })
   name: string;
+
+  @DeleteDateColumn({ name: 'deleted_at' })
+  deletedAt?: Date;
 
   @OneToMany(() => Car, (car) => car.brand)
   cars: Car[];

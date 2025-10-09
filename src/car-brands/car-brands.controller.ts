@@ -45,7 +45,7 @@ export class CarBrandsController {
     return this.carBrandsService.create(createCarBrandDto, file);
   }
 
-  @Put(':id')
+  @Put()
   @UseInterceptors(FileInterceptor('file'))
   update(
     @Param('id') id: string,

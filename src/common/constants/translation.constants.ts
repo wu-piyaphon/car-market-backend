@@ -37,13 +37,3 @@ export const ENGINE_TYPE_TRANSLATIONS: {
   LPG: 'LPG',
   CNG: 'CNG',
 };
-
-export const CAR_CATEGORY_TRANSLATIONS: { [key: string]: string } = {
-  NEW: 'มาใหม่',
-};
-
-export const CAR_TYPE_TRANSLATIONS: { [key: string]: string } = {
-  SUV: 'SUV',
-  SEDAN: 'เก๋ง',
-  PICKUP: 'กระบะ',
-};

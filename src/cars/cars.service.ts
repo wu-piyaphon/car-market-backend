@@ -6,7 +6,6 @@ import { UpdateCarDto } from '@/cars/dtos/update-car.dto';
 import { Car } from '@/cars/entities/car.entity';
 import { AwsS3Service } from '@/common/aws-s3.service';
 import {
-  CAR_TYPE_TRANSLATIONS,
   COLOR_TRANSLATIONS,
   ENGINE_TYPE_TRANSLATIONS,
   TRANSMISSION_TRANSLATIONS,
@@ -181,7 +180,6 @@ export class CarsService {
       transmission:
         TRANSMISSION_TRANSLATIONS[car.transmission] || car.transmission,
       engineType: ENGINE_TYPE_TRANSLATIONS[car.engineType] || car.engineType,
-      type: CAR_TYPE_TRANSLATIONS[car.type.name] || car.type.name,
     };
 
     return translatedCarData;

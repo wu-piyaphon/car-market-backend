@@ -1,18 +1,16 @@
+import {
+  COLOR_TRANSLATIONS,
+  ENGINE_TYPE_TRANSLATIONS,
+  TRANSMISSION_TRANSLATIONS,
+} from '@/common/constants/translation.constants';
+import { EngineType } from '@/common/enums/engine-type.enum';
+import { Transmission } from '@/common/enums/transmission.enum';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CarFilterQueryDto } from '../dtos/car-filter-query.dto';
 import { CarFilterResponseDto } from '../dtos/car-filter-response.dto';
 import { Car } from '../entities/car.entity';
-import {
-  TRANSMISSION_TRANSLATIONS,
-  COLOR_TRANSLATIONS,
-  ENGINE_TYPE_TRANSLATIONS,
-  CAR_CATEGORY_TRANSLATIONS,
-  CAR_TYPE_TRANSLATIONS,
-} from '@/common/constants/translation.constants';
-import { Transmission } from '@/common/enums/transmission.enum';
-import { EngineType } from '@/common/enums/engine-type.enum';
 
 @Injectable()
 export class CarFilterService {
@@ -86,8 +84,8 @@ export class CarFilterService {
     // Get all filter options in parallel
     const [
       brands,
-      rawTypes,
-      rawCategories,
+      types,
+      categories,
       models,
       subModels,
       modelYears,
@@ -107,17 +105,6 @@ export class CarFilterService {
       getDistinctWithCount('car.engineType'),
       getDistinctWithCount('car.engineCapacity'),
     ]);
-
-    // Map keys to display names
-    const types = rawTypes.map((type) => ({
-      ...type,
-      name: CAR_TYPE_TRANSLATIONS[type.id] || type.id,
-    }));
-
-    const categories = rawCategories.map((category) => ({
-      ...category,
-      name: CAR_CATEGORY_TRANSLATIONS[category.id] || category.id,
-    }));
 
     const colors = rawColors.map((color) => ({
       ...color,

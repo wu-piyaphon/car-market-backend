@@ -99,7 +99,8 @@ describe('CarTypesController', () => {
   describe('create', () => {
     it('should create a car type with file', async () => {
       const createDto: CreateCarTypeDto = {
-        name: 'SEDAN',
+        id: 'SEDAN',
+        name: 'รถเก๋ง',
       };
 
       const file: Express.Multer.File = {
@@ -132,6 +133,7 @@ describe('CarTypesController', () => {
 
     it('should create a car type with different name', async () => {
       const createDto: CreateCarTypeDto = {
+        id: 'HATCHBACK',
         name: 'HATCHBACK',
       };
 

@@ -1,9 +1,9 @@
 import { Car } from '@/cars/entities/car.entity';
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, DeleteDateColumn, Entity, OneToMany } from 'typeorm';
 
 @Entity('car_types')
 export class CarType {
-  @PrimaryGeneratedColumn('uuid')
+  @Column({ primary: true, unique: true })
   id: string;
 
   @Column()
@@ -14,4 +14,7 @@ export class CarType {
 
   @OneToMany(() => Car, (car) => car.type)
   cars: Car[];
+
+  @DeleteDateColumn({ name: 'deleted_at' })
+  deletedAt?: Date;
 }

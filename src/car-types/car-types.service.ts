@@ -34,7 +34,22 @@ export class CarTypesService {
     createCarTypeDto: CreateCarTypeDto,
     file: Express.Multer.File,
   ): Promise<CarType> {
+    const existingType = await this.carTypeRepository.findOne({
+      where: { id: createCarTypeDto.id },
+      withDeleted: true,
+    });
+
+    if (existingType && !existingType.deletedAt) {
+      throw new BadRequestException('Car type already exists');
+    }
+
     const image = await this.awsS3Service.uploadFile(file, 'car-types');
+
+    if (existingType && existingType.deletedAt) {
+      await this.restore(existingType.id);
+      return await this.update(existingType.id, createCarTypeDto, file);
+    }
+
     const type = this.carTypeRepository.create({
       ...createCarTypeDto,
       image,
@@ -75,6 +90,35 @@ export class CarTypesService {
 
   async remove(id: string): Promise<void> {
     const type = await this.findOne(id);
+    await this.carTypeRepository.softRemove(type);
+  }
+
+  async restore(id: string): Promise<CarType> {
+    const type = await this.carTypeRepository.findOne({
+      where: { id },
+      withDeleted: true,
+    });
+
+    if (!type) {
+      throw new NotFoundException('Car type not found');
+    }
+    if (!type.deletedAt) {
+      throw new BadRequestException('Car type is not deleted');
+    }
+    await this.carTypeRepository.restore(id);
+    return this.findOne(id);
+  }
+
+  async hardDelete(id: string): Promise<void> {
+    const type = await this.carTypeRepository.findOne({
+      where: { id },
+      withDeleted: true,
+    });
+
+    if (!type) {
+      throw new NotFoundException('Car type not found');
+    }
+
     await this.awsS3Service.deleteFile(type.image);
     await this.carTypeRepository.remove(type);
   }

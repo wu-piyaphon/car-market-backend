@@ -119,7 +119,8 @@ describe('CarTypesService', () => {
 
   describe('create', () => {
     const createCarTypeDto: CreateCarTypeDto = {
-      name: 'SUV',
+      id: 'SEDAN',
+      name: 'รถเก๋ง',
     };
 
     it('should create a car type successfully', async () => {

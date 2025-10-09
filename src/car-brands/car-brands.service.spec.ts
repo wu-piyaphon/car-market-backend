@@ -6,6 +6,7 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { NotFoundException, BadRequestException } from '@nestjs/common';
 import { CreateCarBrandDto } from './dtos/create-car-brand.dto';
 import { UpdateCarBrandDto } from './dtos/update-car-brand.dto';
+import { IsNull } from 'typeorm';
 
 describe('CarBrandsService', () => {
   let service: CarBrandsService;
@@ -16,7 +17,7 @@ describe('CarBrandsService', () => {
     create: jest.fn(),
     save: jest.fn(),
     merge: jest.fn(),
-    remove: jest.fn(),
+    softRemove: jest.fn(),
   };
 
   const mockAwsS3Service = {
@@ -102,7 +103,7 @@ describe('CarBrandsService', () => {
 
       expect(result).toEqual(mockCarBrand);
       expect(mockRepository.findOne).toHaveBeenCalledWith({
-        where: { id: mockCarBrand.id },
+        where: { id: mockCarBrand.id, deletedAt: IsNull() },
       });
     });
 
@@ -113,14 +114,15 @@ describe('CarBrandsService', () => {
         new NotFoundException('Car brand not found'),
       );
       expect(mockRepository.findOne).toHaveBeenCalledWith({
-        where: { id: 'nonexistent-id' },
+        where: { id: 'nonexistent-id', deletedAt: IsNull() },
       });
     });
   });
 
   describe('create', () => {
     const createCarBrandDto: CreateCarBrandDto = {
-      name: 'Nissan',
+      id: 'NISSAN',
+      name: 'นิซซัน',
     };
 
     it('should create a car brand successfully', async () => {
@@ -288,15 +290,12 @@ describe('CarBrandsService', () => {
 
     it('should remove a car brand successfully', async () => {
       mockAwsS3Service.deleteFile.mockResolvedValue(undefined);
-      mockRepository.remove.mockResolvedValue(mockCarBrand);
+      mockRepository.softRemove.mockResolvedValue(mockCarBrand);
 
       await service.remove(mockCarBrand.id);
 
       expect(service.findOne).toHaveBeenCalledWith(mockCarBrand.id);
-      expect(mockAwsS3Service.deleteFile).toHaveBeenCalledWith(
-        mockCarBrand.image,
-      );
-      expect(mockRepository.remove).toHaveBeenCalledWith(mockCarBrand);
+      expect(mockRepository.softRemove).toHaveBeenCalledWith(mockCarBrand);
     });
 
     it('should throw NotFoundException when car brand not found', async () => {
@@ -309,7 +308,7 @@ describe('CarBrandsService', () => {
       );
 
       expect(mockAwsS3Service.deleteFile).not.toHaveBeenCalled();
-      expect(mockRepository.remove).not.toHaveBeenCalled();
+      expect(mockRepository.softRemove).not.toHaveBeenCalled();
     });
   });
 });

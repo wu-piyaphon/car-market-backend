@@ -42,40 +42,48 @@ describe('CarFilterController', () => {
       const query: CarFilterQueryDto = {};
       const expectedResult: CarFilterResponseDto = {
         brands: [
-          { name: 'Toyota', count: 5, image: 'toyota-image-url' },
-          { name: 'Honda', count: 3, image: 'honda-image-url' },
+          { id: 'Toyota', name: 'Toyota', count: 5, image: 'toyota-image-url' },
+          { id: 'Honda', name: 'Honda', count: 3, image: 'honda-image-url' },
         ],
         types: [
-          { name: 'SUV', count: 4, image: 'suv-image-url' },
-          { name: 'SEDAN', count: 3, image: 'sedan-image-url' },
+          { id: 'SUV', name: 'SUV', count: 4, image: 'suv-image-url' },
+          { id: 'SEDAN', name: 'SEDAN', count: 3, image: 'sedan-image-url' },
         ],
         categories: [
-          { name: 'NEW', count: 2 },
-          { name: 'USED', count: 5 },
+          { id: 'NEW', name: 'NEW', count: 2 },
+          { id: 'USED', name: 'USED', count: 5 },
         ],
         models: [
-          { name: 'Corolla', count: 3 },
-          { name: 'Civic', count: 2 },
+          { id: 'Corolla', name: 'Corolla', count: 3 },
+          { id: 'Civic', name: 'Civic', count: 2 },
         ],
         subModels: [
-          { name: 'Altis', count: 1 },
-          { name: 'Grande', count: 2 },
+          { id: 'Altis', name: 'Altis', count: 1 },
+          { id: 'Grande', name: 'Grande', count: 2 },
         ],
         modelYears: [
-          { name: '2020', count: 2 },
-          { name: '2021', count: 3 },
+          { id: '2020', name: '2020', count: 2 },
+          { id: '2021', name: '2021', count: 3 },
         ],
         transmissions: [
-          { name: Transmission.AUTOMATIC, count: 4 },
-          { name: Transmission.MANUAL, count: 3 },
+          {
+            id: Transmission.AUTOMATIC,
+            name: Transmission.AUTOMATIC,
+            count: 4,
+          },
+          { id: Transmission.MANUAL, name: Transmission.MANUAL, count: 3 },
         ],
         colors: [
-          { name: 'red', count: 2 },
-          { name: 'blue', count: 3 },
+          { id: 'red', name: 'red', count: 2 },
+          { id: 'blue', name: 'blue', count: 3 },
         ],
         engineTypes: [
-          { name: EngineType.HYBRID, count: 1 },
-          { name: EngineType.GASOLINE, count: 6 },
+          { id: EngineType.HYBRID, name: EngineType.HYBRID, count: 1 },
+          { id: EngineType.GASOLINE, name: EngineType.GASOLINE, count: 6 },
+        ],
+        engineCapacities: [
+          { id: '1800', name: '1800', count: 2 },
+          { id: '2000', name: '2000', count: 3 },
         ],
       };
 
@@ -102,15 +110,26 @@ describe('CarFilterController', () => {
         engineCapacity: 1800,
       };
       const expectedResult: CarFilterResponseDto = {
-        brands: [{ name: 'Toyota', count: 2, image: 'toyota-image-url' }],
-        types: [{ name: 'SUV', count: 2, image: 'suv-image-url' }],
-        categories: [{ name: 'NEW', count: 2 }],
-        models: [{ name: 'Corolla', count: 2 }],
-        subModels: [{ name: 'Altis', count: 2 }],
-        modelYears: [{ name: '2020', count: 2 }],
-        transmissions: [{ name: Transmission.AUTOMATIC, count: 2 }],
-        colors: [{ name: 'red', count: 2 }],
-        engineTypes: [{ name: EngineType.HYBRID, count: 2 }],
+        brands: [
+          { id: 'Toyota', name: 'Toyota', count: 2, image: 'toyota-image-url' },
+        ],
+        types: [{ id: 'SUV', name: 'SUV', count: 2, image: 'suv-image-url' }],
+        categories: [{ id: 'NEW', name: 'NEW', count: 2 }],
+        models: [{ id: 'Corolla', name: 'Corolla', count: 2 }],
+        subModels: [{ id: 'Altis', name: 'Altis', count: 2 }],
+        modelYears: [{ id: '2020', name: '2020', count: 2 }],
+        transmissions: [
+          {
+            id: Transmission.AUTOMATIC,
+            name: Transmission.AUTOMATIC,
+            count: 2,
+          },
+        ],
+        colors: [{ id: 'red', name: 'red', count: 2 }],
+        engineTypes: [
+          { id: EngineType.HYBRID, name: EngineType.HYBRID, count: 2 },
+        ],
+        engineCapacities: [{ id: '1800', name: '1800', count: 2 }],
       };
 
       mockCarFilterService.getFilters.mockResolvedValue(expectedResult);
@@ -136,6 +155,7 @@ describe('CarFilterController', () => {
         transmissions: [],
         colors: [],
         engineTypes: [],
+        engineCapacities: [],
       };
 
       mockCarFilterService.getFilters.mockResolvedValue(expectedResult);
@@ -153,15 +173,24 @@ describe('CarFilterController', () => {
         transmission: Transmission.MANUAL,
       };
       const expectedResult: CarFilterResponseDto = {
-        brands: [{ name: 'Toyota', count: 1, image: 'toyota-image-url' }],
-        types: [{ name: 'SEDAN', count: 1, image: 'sedan-image-url' }],
-        categories: [{ name: 'USED', count: 1 }],
-        models: [{ name: 'Camry', count: 1 }],
-        subModels: [{ name: 'Grande', count: 1 }],
-        modelYears: [{ name: '2019', count: 1 }],
-        transmissions: [{ name: Transmission.MANUAL, count: 1 }],
-        colors: [{ name: 'white', count: 1 }],
-        engineTypes: [{ name: EngineType.GASOLINE, count: 1 }],
+        brands: [
+          { id: 'Toyota', name: 'Toyota', count: 1, image: 'toyota-image-url' },
+        ],
+        types: [
+          { id: 'SEDAN', name: 'SEDAN', count: 1, image: 'sedan-image-url' },
+        ],
+        categories: [{ id: 'USED', name: 'USED', count: 1 }],
+        models: [{ id: 'Camry', name: 'Camry', count: 1 }],
+        subModels: [{ id: 'Grande', name: 'Grande', count: 1 }],
+        modelYears: [{ id: '2019', name: '2019', count: 1 }],
+        transmissions: [
+          { id: Transmission.MANUAL, name: Transmission.MANUAL, count: 1 },
+        ],
+        colors: [{ id: 'white', name: 'white', count: 1 }],
+        engineTypes: [
+          { id: EngineType.GASOLINE, name: EngineType.GASOLINE, count: 1 },
+        ],
+        engineCapacities: [{ id: '2000', name: '2000', count: 1 }],
       };
 
       mockCarFilterService.getFilters.mockResolvedValue(expectedResult);

@@ -50,7 +50,7 @@ describe('EstimateRequestsController', () => {
   describe('create', () => {
     it('should create an estimate request', async () => {
       const createDto: CreateEstimateRequestDto = {
-        brandId: 'brand-uuid',
+        brand: 'BRAND',
         model: 'Test Model',
         modelYear: 2020,
         firstName: 'John',
@@ -101,7 +101,7 @@ describe('EstimateRequestsController', () => {
 
     it('should create an estimate request without files', async () => {
       const createDto: CreateEstimateRequestDto = {
-        brandId: 'brand-uuid',
+        brand: 'BRAND',
         model: 'Test Model',
         modelYear: 2020,
         firstName: 'John',
@@ -157,11 +157,12 @@ describe('EstimateRequestsController', () => {
               model: 'Test Model',
               modelYear: 2020,
               brand: 'Test Brand',
-              images: ['image-url'],
+              thumbnail: 'image-url',
               note: '',
               type: undefined,
               status: RequestContactStatus.NOT_CONTACTED,
               createdAt: new Date(),
+              updatedAt: new Date(),
             } as EstimateRequestListResponseDto,
           ],
           total: 1,

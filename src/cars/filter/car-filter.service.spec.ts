@@ -1,3 +1,4 @@
+import { ENGINE_TYPE_TRANSLATIONS } from '@/common/constants/translation.constants';
 import { EngineType } from '@/common/enums/engine-type.enum';
 import { Transmission } from '@/common/enums/transmission.enum';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -67,6 +68,7 @@ describe('CarFilterService', () => {
         [{ value: Transmission.AUTOMATIC, count: 4 }], // transmissions
         [{ value: 'red', count: 2 }], // colors
         [{ value: EngineType.HYBRID, count: 1 }], // engineTypes
+        [{ value: 500, count: 0 }], // engineCapacities
       ];
 
       mockQueryBuilder.getRawMany
@@ -78,7 +80,8 @@ describe('CarFilterService', () => {
         .mockResolvedValueOnce(mockData[5])
         .mockResolvedValueOnce(mockData[6])
         .mockResolvedValueOnce(mockData[7])
-        .mockResolvedValueOnce(mockData[8]);
+        .mockResolvedValueOnce(mockData[8])
+        .mockResolvedValueOnce(mockData[9]);
 
       const query: CarFilterQueryDto = {};
 
@@ -88,26 +91,39 @@ describe('CarFilterService', () => {
       // Assert
       const expectedResult: CarFilterResponseDto = {
         brands: [
-          { name: 'Toyota', count: 5, image: 'toyota-url' },
-          { name: 'Honda', count: 3, image: 'honda-url' },
+          { id: 'Toyota', name: 'Toyota', count: 5, image: 'toyota-url' },
+          { id: 'Honda', name: 'Honda', count: 3, image: 'honda-url' },
         ],
-        types: [{ name: 'SUV', count: 4, image: 'suv-url' }],
+        types: [{ id: 'SUV', name: 'SUV', count: 4, image: 'suv-url' }],
         categories: [
-          { name: 'NEW', count: 2 },
-          { name: 'USED', count: 5 },
+          { id: 'NEW', name: 'NEW', count: 2 },
+          { id: 'USED', name: 'USED', count: 5 },
         ],
-        models: [{ name: 'Corolla', count: 3 }],
-        subModels: [{ name: 'Altis', count: 1 }],
-        modelYears: [{ name: '2020', count: 2 }],
-        transmissions: [{ name: Transmission.AUTOMATIC, count: 4 }],
-        colors: [{ name: 'red', count: 2 }],
-        engineTypes: [{ name: EngineType.HYBRID, count: 1 }],
+        models: [{ id: 'Corolla', name: 'Corolla', count: 3 }],
+        subModels: [{ id: 'Altis', name: 'Altis', count: 1 }],
+        modelYears: [{ id: '2020', name: '2020', count: 2 }],
+        transmissions: [
+          {
+            id: Transmission.AUTOMATIC,
+            name: 'เกียร์อัตโนมัติ',
+            count: 4,
+          },
+        ],
+        colors: [{ id: 'red', name: 'red', count: 2 }],
+        engineTypes: [
+          {
+            id: EngineType.HYBRID,
+            name: ENGINE_TYPE_TRANSLATIONS[EngineType.HYBRID],
+            count: 1,
+          },
+        ],
+        engineCapacities: [{ id: '500', name: '500 CC', count: 0 }],
       };
 
       expect(result).toEqual(expectedResult);
 
-      // Verify query builder was called correct number of times (9 times for 9 filters)
-      expect(mockRepository.createQueryBuilder).toHaveBeenCalledTimes(9);
+      // Verify query builder was called correct number of times (10 times for 10 filters)
+      expect(mockRepository.createQueryBuilder).toHaveBeenCalledTimes(10);
       expect(mockQueryBuilder.leftJoin).toHaveBeenCalledWith(
         'car.brand',
         'brand',
@@ -122,7 +138,7 @@ describe('CarFilterService', () => {
       );
       expect(mockQueryBuilder.groupBy).toHaveBeenCalled();
       expect(mockQueryBuilder.select).toHaveBeenCalled();
-      expect(mockQueryBuilder.getRawMany).toHaveBeenCalledTimes(9);
+      expect(mockQueryBuilder.getRawMany).toHaveBeenCalledTimes(10);
     });
 
     it('should return empty array if filter value is null', async () => {
@@ -137,6 +153,7 @@ describe('CarFilterService', () => {
         [], // transmissions
         [], // colors
         [], // engineTypes
+        [], // engineCapacities
       ];
 
       mockQueryBuilder.getRawMany
@@ -148,7 +165,8 @@ describe('CarFilterService', () => {
         .mockResolvedValueOnce(mockData[5])
         .mockResolvedValueOnce(mockData[6])
         .mockResolvedValueOnce(mockData[7])
-        .mockResolvedValueOnce(mockData[8]);
+        .mockResolvedValueOnce(mockData[8])
+        .mockResolvedValueOnce(mockData[9]);
 
       const query: CarFilterQueryDto = {};
 
@@ -166,6 +184,7 @@ describe('CarFilterService', () => {
         transmissions: [],
         colors: [],
         engineTypes: [],
+        engineCapacities: [],
       });
     });
 
@@ -283,6 +302,7 @@ describe('CarFilterService', () => {
         transmissions: [],
         colors: [],
         engineTypes: [],
+        engineCapacities: [],
       });
     });
 
@@ -298,6 +318,7 @@ describe('CarFilterService', () => {
         [], // transmissions
         [], // colors
         [], // engineTypes
+        [], // engineCapacities
       ];
 
       mockQueryBuilder.getRawMany
@@ -309,27 +330,35 @@ describe('CarFilterService', () => {
         .mockResolvedValueOnce(mockData[5])
         .mockResolvedValueOnce(mockData[6])
         .mockResolvedValueOnce(mockData[7])
-        .mockResolvedValueOnce(mockData[8]);
+        .mockResolvedValueOnce(mockData[8])
+        .mockResolvedValueOnce(mockData[9]);
 
       // Act
       const result = await service.getFilters({});
 
       // Assert - Values should be converted to strings, counts to numbers
       expect(result.brands).toEqual([
-        { name: 'Toyota', count: 5, image: 'toyota-url' },
+        { id: 'Toyota', name: 'Toyota', count: 5, image: 'toyota-url' },
       ]);
       expect(result.types).toEqual([
-        { name: 'SUV', count: 4.5, image: 'suv-url' },
+        { id: 'SUV', name: 'SUV', count: 4.5, image: 'suv-url' },
       ]);
-      expect(result.categories).toEqual([{ name: '123', count: 2 }]);
+      expect(result.categories).toEqual([{ id: '123', name: '123', count: 2 }]);
     });
 
     it('should handle image columns correctly', async () => {
       // Arrange
       const mockData = [
-        [{ value: 'Toyota', count: 5, image: 'toyota-image-url' }], // brands with image
-        [{ value: 'SUV', count: 4, image: 'suv-image-url' }], // types with image
-        [{ value: 'NEW', count: 2 }], // categories without image
+        [
+          {
+            id: 'TOYOTA',
+            value: 'Toyota',
+            count: 5,
+            image: 'toyota-image-url',
+          },
+        ], // brands with image
+        [{ id: 'SUV', value: 'SUV', count: 4, image: 'suv-image-url' }], // types with image
+        [{ id: 'NEW', value: 'NEW', count: 2 }], // categories without image
         [],
         [],
         [],
@@ -342,6 +371,7 @@ describe('CarFilterService', () => {
         .mockResolvedValueOnce(mockData[0])
         .mockResolvedValueOnce(mockData[1])
         .mockResolvedValueOnce(mockData[2])
+        .mockResolvedValueOnce([])
         .mockResolvedValueOnce([])
         .mockResolvedValueOnce([])
         .mockResolvedValueOnce([])

@@ -145,6 +145,7 @@ describe('CarBrandsController', () => {
 
     it('should create a car brand with file', async () => {
       const createCarBrandDto: CreateCarBrandDto = {
+        id: 'NISSAN',
         name: 'Nissan',
       };
       const expectedResult: CarBrand = {
@@ -166,6 +167,7 @@ describe('CarBrandsController', () => {
 
     it('should create a car brand with different name', async () => {
       const createCarBrandDto: CreateCarBrandDto = {
+        id: 'BMW',
         name: 'BMW',
       };
       const expectedResult: CarBrand = {

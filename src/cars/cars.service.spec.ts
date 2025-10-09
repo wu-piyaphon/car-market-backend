@@ -1,25 +1,29 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { CarsService } from './cars.service';
-import { Car } from './entities/car.entity';
 import { CarBrandsService } from '@/car-brands/car-brands.service';
 import { AwsS3Service } from '@/common/aws-s3.service';
-import { Repository } from 'typeorm';
-import { getRepositoryToken } from '@nestjs/typeorm';
-import { NotFoundException } from '@nestjs/common';
-import { CreateCarDto } from './dtos/create-car.dto';
-import { UpdateCarDto } from './dtos/update-car.dto';
-import { CarListQueryDto } from './dtos/car-list-query.dto';
-import { Transmission } from '@/common/enums/transmission.enum';
+import { PaginationResponseDto } from '@/common/dtos/pagination-response.dto';
 import { EngineType } from '@/common/enums/engine-type.enum';
 import { SalesRequestType } from '@/common/enums/request.enum';
-import { PaginationResponseDto } from '@/common/dtos/pagination-response.dto';
+import { Transmission } from '@/common/enums/transmission.enum';
+import { NotFoundException } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
+import { getRepositoryToken } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { CarsService } from './cars.service';
+import { CarListQueryDto } from './dtos/car-list-query.dto';
 import { CarListResponseDto } from './dtos/car-list-response.dto';
+import { CreateCarDto } from './dtos/create-car.dto';
+import { UpdateCarDto } from './dtos/update-car.dto';
+import { Car } from './entities/car.entity';
 
 // Mock the slug utility
 jest.mock('@/common/utils/slug.utils', () => ({
   generateCarSlug: jest.fn(),
 }));
 
+import {
+  ENGINE_TYPE_TRANSLATIONS,
+  TRANSMISSION_TRANSLATIONS,
+} from '@/common/constants/translation.constants';
 import { generateCarSlug } from '@/common/utils/slug.utils';
 
 describe('CarsService', () => {
@@ -276,8 +280,8 @@ describe('CarsService', () => {
       const query: CarListQueryDto = {
         page: 1,
         pageSize: 10,
-        brand: 'Honda',
-        type: 'Sedan',
+        brand: 'HONDA',
+        type: 'SEDAN',
         model: 'Civic',
         transmission: Transmission.MANUAL,
         minPrice: 15000,
@@ -305,9 +309,9 @@ describe('CarsService', () => {
           images: ['image-url'],
           createdAt: new Date(),
           updatedAt: new Date(),
-          brand: { id: 'brand-uuid', name: 'Honda' } as any,
-          type: { id: 'type-uuid', name: 'Sedan' } as any,
-          category: { id: 'category-uuid', name: 'Sport' } as any,
+          brand: { id: 'HONDA', name: 'Honda' } as any,
+          type: { id: 'SEDAN', name: 'Sedan' } as any,
+          category: { id: 'NEW', name: 'มาใหม่' } as any,
           createdBy: null,
           updatedBy: null,
         },
@@ -334,11 +338,11 @@ describe('CarsService', () => {
       expect(mockQueryBuilder.take).toHaveBeenCalledWith(10);
       expect(mockQueryBuilder.andWhere).toHaveBeenCalledWith(
         'brand.name = :brand',
-        { brand: 'Honda' },
+        { brand: 'HONDA' },
       );
       expect(mockQueryBuilder.andWhere).toHaveBeenCalledWith(
         'type.name = :type',
-        { type: 'Sedan' },
+        { type: 'SEDAN' },
       );
       expect(mockQueryBuilder.andWhere).toHaveBeenCalledWith(
         'car.model = :model',
@@ -490,8 +494,8 @@ describe('CarsService', () => {
         images: ['image-url'],
         createdAt: new Date(),
         updatedAt: new Date(),
-        brand: null,
-        type: null,
+        brand: 'HONDA' as any,
+        type: { id: 'SEDAN', name: 'Sedan' } as any,
         category: null,
         createdBy: null,
         updatedBy: null,
@@ -505,7 +509,11 @@ describe('CarsService', () => {
         where: { slug, isActive: true },
         relations: ['brand', 'type', 'category'],
       });
-      expect(result).toEqual(mockCar);
+      expect(result).toEqual({
+        ...mockCar,
+        transmission: TRANSMISSION_TRANSLATIONS[mockCar.transmission],
+        engineType: ENGINE_TYPE_TRANSLATIONS[mockCar.engineType],
+      });
     });
 
     it('should throw NotFoundException if car not found by slug', async () => {

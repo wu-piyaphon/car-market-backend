@@ -10,6 +10,7 @@ import { UpdateEstimateRequestDto } from './dtos/update-estimate-request.dto';
 import { EstimateRequestListQueryDto } from './dtos/estimate-request-list-query.dto';
 import { RequestContactStatus } from '@/common/enums/request.enum';
 import { EstimateRequestListResponseDto } from './dtos/estimate-request-list-response.dto';
+import { CarBrandsService } from '@/car-brands/car-brands.service';
 
 describe('EstimateRequestsService', () => {
   let service: EstimateRequestsService;
@@ -27,6 +28,11 @@ describe('EstimateRequestsService', () => {
 
   const mockAwsS3Service = {
     uploadFile: jest.fn(),
+  };
+
+  const mockCarBrandsService = {
+    findByName: jest.fn(),
+    findOne: jest.fn(),
   };
 
   const mockQueryBuilder = {
@@ -51,6 +57,10 @@ describe('EstimateRequestsService', () => {
           provide: AwsS3Service,
           useValue: mockAwsS3Service,
         },
+        {
+          provide: CarBrandsService,
+          useValue: mockCarBrandsService,
+        },
       ],
     }).compile();
 
@@ -72,7 +82,7 @@ describe('EstimateRequestsService', () => {
   describe('create', () => {
     it('should create an estimate request with files', async () => {
       const createDto: CreateEstimateRequestDto = {
-        brandId: 'brand-uuid',
+        brand: 'Toyota',
         model: 'Test Model',
         modelYear: 2020,
         firstName: 'John',
@@ -100,7 +110,7 @@ describe('EstimateRequestsService', () => {
       const createdEntity = {
         ...createDto,
         images: uploadedImageUrls,
-        brand: { id: createDto.brandId },
+        brand: { id: createDto.brand },
       };
       const savedEntity: EstimateRequest = {
         id: 'estimate-uuid',
@@ -115,10 +125,13 @@ describe('EstimateRequestsService', () => {
         note: '',
         createdAt: new Date(),
         updatedAt: new Date(),
-        brand: null,
+        brand: { id: createDto.brand, name: createDto.brand } as any,
         updatedBy: null,
       };
 
+      mockCarBrandsService.findByName.mockResolvedValue({
+        id: createDto.brand,
+      } as any);
       mockAwsS3Service.uploadFile.mockResolvedValue(uploadedImageUrls[0]);
       mockRepository.create.mockReturnValue(createdEntity);
       mockRepository.save.mockResolvedValue(savedEntity);
@@ -132,7 +145,7 @@ describe('EstimateRequestsService', () => {
       expect(repository.create).toHaveBeenCalledWith({
         ...createDto,
         images: uploadedImageUrls,
-        brand: { id: createDto.brandId },
+        brand: { id: createDto.brand },
       });
       expect(repository.save).toHaveBeenCalledWith(createdEntity);
       expect(result).toEqual(savedEntity);
@@ -140,7 +153,7 @@ describe('EstimateRequestsService', () => {
 
     it('should create an estimate request without files', async () => {
       const createDto: CreateEstimateRequestDto = {
-        brandId: 'brand-uuid',
+        brand: 'Toyota',
         model: 'Test Model',
         modelYear: 2020,
         firstName: 'John',
@@ -153,7 +166,7 @@ describe('EstimateRequestsService', () => {
       const createdEntity = {
         ...createDto,
         images: [],
-        brand: { id: createDto.brandId },
+        brand: { id: createDto.brand },
       };
       const savedEntity: EstimateRequest = {
         id: 'estimate-uuid',
@@ -181,7 +194,7 @@ describe('EstimateRequestsService', () => {
       expect(repository.create).toHaveBeenCalledWith({
         ...createDto,
         images: [],
-        brand: { id: createDto.brandId },
+        brand: { id: createDto.brand },
       });
       expect(repository.save).toHaveBeenCalledWith(createdEntity);
       expect(result).toEqual(savedEntity);
@@ -338,26 +351,29 @@ describe('EstimateRequestsService', () => {
         note: '',
         createdAt: new Date(),
         updatedAt: new Date(),
-        brand: null,
+        brand: { id: 'Toyota' } as any,
         updatedBy: null,
       };
 
       const updatedEstimateRequest: EstimateRequest = {
         ...existingEstimateRequest,
         ...updateDto,
+        brand: existingEstimateRequest.brand,
         updatedBy: { id: userId } as any,
       };
 
       mockRepository.findOne.mockResolvedValue(existingEstimateRequest);
+      mockCarBrandsService.findByName.mockResolvedValue(undefined);
       mockRepository.save.mockResolvedValue(updatedEstimateRequest);
 
       const result = await service.update(id, updateDto, userId);
 
       expect(repository.findOne).toHaveBeenCalledWith({ where: { id } });
-      expect(repository.merge).toHaveBeenCalledWith(
-        existingEstimateRequest,
-        updateDto,
-      );
+      expect(mockCarBrandsService.findByName).toHaveBeenCalledWith(undefined);
+      expect(repository.merge).toHaveBeenCalledWith(existingEstimateRequest, {
+        ...updateDto,
+        brand: undefined,
+      });
       expect(repository.save).toHaveBeenCalledWith({
         ...existingEstimateRequest,
         updatedBy: { id: userId },

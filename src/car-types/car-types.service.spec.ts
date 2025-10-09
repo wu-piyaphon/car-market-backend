@@ -17,6 +17,7 @@ describe('CarTypesService', () => {
     save: jest.fn(),
     merge: jest.fn(),
     remove: jest.fn(),
+    softRemove: jest.fn(),
   };
 
   const mockAwsS3Service = {
@@ -288,15 +289,12 @@ describe('CarTypesService', () => {
 
     it('should remove a car type successfully', async () => {
       mockAwsS3Service.deleteFile.mockResolvedValue(undefined);
-      mockRepository.remove.mockResolvedValue(mockCarType);
+      mockRepository.softRemove.mockResolvedValue(mockCarType);
 
       await service.remove(mockCarType.id);
 
       expect(service.findOne).toHaveBeenCalledWith(mockCarType.id);
-      expect(mockAwsS3Service.deleteFile).toHaveBeenCalledWith(
-        mockCarType.image,
-      );
-      expect(mockRepository.remove).toHaveBeenCalledWith(mockCarType);
+      expect(mockRepository.softRemove).toHaveBeenCalledWith(mockCarType);
     });
 
     it('should throw NotFoundException when car type not found', async () => {
@@ -309,7 +307,7 @@ describe('CarTypesService', () => {
       );
 
       expect(mockAwsS3Service.deleteFile).not.toHaveBeenCalled();
-      expect(mockRepository.remove).not.toHaveBeenCalled();
+      expect(mockRepository.softRemove).not.toHaveBeenCalled();
     });
   });
 });

@@ -46,7 +46,7 @@ export class CarBrandsController {
     return this.carBrandsService.create(createCarBrandDto, file);
   }
 
-  @Put()
+  @Put(':id')
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(FileInterceptor('file'))
   update(

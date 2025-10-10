@@ -27,7 +27,7 @@ jobs:
       - name: Clean up Docker resources
         run: |
           echo "Cleaning up unused Docker resources..."
-          sudo docker system prune -a
+          sudo docker system prune -a -f
           echo "✅ Docker cleanup completed"
 
       - name: Pull latest Docker image

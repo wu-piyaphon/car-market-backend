@@ -34,6 +34,7 @@ export class AwsS3Service {
         Key: key,
         Body: file.buffer,
         ContentType: file.mimetype,
+        CacheControl: 'no-cache',
       }),
     );
 

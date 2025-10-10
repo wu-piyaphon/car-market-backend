@@ -83,6 +83,7 @@ export class CarsService {
 
     const qb = this.carsRepository
       .createQueryBuilder('car')
+      .withDeleted()
       .leftJoinAndSelect('car.brand', 'brand')
       .leftJoinAndSelect('car.type', 'type')
       .leftJoinAndSelect('car.category', 'category')
@@ -136,7 +137,7 @@ export class CarsService {
     if (keyword) {
       const keywordLower = keyword.toLowerCase();
       qb.andWhere(
-        '(LOWER(car.model) ILIKE :keyword OR LOWER(car.sub_model) ILIKE :keyword)',
+        '(LOWER(car.model) ILIKE :keyword OR LOWER(car.sub_model) ILIKE :keyword OR LOWER(car.previous_license_plate) ILIKE :keyword OR LOWER(car.new_license_plate) ILIKE :keyword))',
         { keyword: `%${keywordLower}%` },
       );
     }
@@ -155,6 +156,7 @@ export class CarsService {
     const car = await this.carsRepository.findOne({
       where: { id: carId },
       relations: ['brand', 'type', 'category', 'createdBy', 'updatedBy'],
+      withDeleted: true,
     });
 
     if (!car) {
@@ -168,6 +170,7 @@ export class CarsService {
     const car = await this.carsRepository.findOne({
       where: { slug, isActive: true },
       relations: ['brand', 'type', 'category'],
+      withDeleted: true,
     });
 
     if (!car) {

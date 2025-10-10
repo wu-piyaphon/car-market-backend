@@ -18,18 +18,18 @@ export class CreateCarDto {
   @IsString()
   @IsNotEmpty()
   @IsUppercase()
-  @ApiProperty({ description: 'Car type UUID' })
+  @ApiProperty({ description: 'Car type id' })
   typeId: string;
 
   @IsString()
   @IsNotEmpty()
   @IsUppercase()
-  @ApiProperty({ description: 'Car brand UUID' })
+  @ApiProperty({ description: 'Car brand id' })
   brandId: string;
 
   @IsString()
   @IsOptional()
-  @ApiProperty({ description: 'Car category UUID' })
+  @ApiProperty({ description: 'Car category id' })
   categoryId: string | null;
 
   @IsString()

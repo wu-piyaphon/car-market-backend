@@ -21,9 +21,9 @@ export class CarFilterService {
 
   async getFilters(query: CarFilterQueryDto): Promise<CarFilterResponseDto> {
     const eqFilters = [
-      { field: 'type', value: query.type, path: 'type.name' },
-      { field: 'brand', value: query.brand, path: 'brand.name' },
-      { field: 'category', value: query.category, path: 'category.name' },
+      { field: 'type', value: query.type, path: 'type.id' },
+      { field: 'brand', value: query.brand, path: 'brand.id' },
+      { field: 'category', value: query.category, path: 'category.id' },
       { field: 'model', value: query.model, path: 'car.model' },
       { field: 'subModel', value: query.subModel, path: 'car.subModel' },
       {
@@ -94,9 +94,9 @@ export class CarFilterService {
       rawEngineTypes,
       rawEngineCapacities,
     ] = await Promise.all([
-      getDistinctWithCount('brand.name', 'brand.image'),
-      getDistinctWithCount('type.name', 'type.image'),
-      getDistinctWithCount('category.name'),
+      getDistinctWithCount('brand.id', 'brand.image'),
+      getDistinctWithCount('type.id', 'type.image'),
+      getDistinctWithCount('category.id'),
       getDistinctWithCount('car.model'),
       getDistinctWithCount('car.subModel'),
       getDistinctWithCount('car.modelYear'),

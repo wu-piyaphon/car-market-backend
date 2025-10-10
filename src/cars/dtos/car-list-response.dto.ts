@@ -19,10 +19,10 @@ export class CarListResponseDto {
 
   constructor(car: Car) {
     this.id = car.id;
-    this.brand = car.brand.name;
-    this.type = car.type.name;
+    this.brand = car.brand.id;
+    this.type = car.type.id;
     this.transmission = car.transmission;
-    this.category = car.category?.name || null;
+    this.category = car.category?.id || null;
     this.thumbnail = car.images[0] || null;
     this.model = car.model;
     this.subModel = car.subModel;

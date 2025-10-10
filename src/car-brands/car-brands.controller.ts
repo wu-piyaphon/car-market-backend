@@ -22,7 +22,6 @@ import {
 import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('car-brands')
-@UseGuards(JwtAuthGuard)
 export class CarBrandsController {
   constructor(private readonly carBrandsService: CarBrandsService) {}
 
@@ -32,11 +31,13 @@ export class CarBrandsController {
   }
 
   @Get(':id')
+  @UseGuards(JwtAuthGuard)
   findOne(@Param('id') id: string): Promise<CarBrand> {
     return this.carBrandsService.findOne(id);
   }
 
   @Post()
+  @UseGuards(JwtAuthGuard)
   @UseInterceptors(FileInterceptor('file'))
   create(
     @Body() createCarBrandDto: CreateCarBrandDto,
@@ -46,6 +47,7 @@ export class CarBrandsController {
   }
 
   @Put()
+  @UseGuards(JwtAuthGuard)
   @UseInterceptors(FileInterceptor('file'))
   update(
     @Param('id') id: string,
@@ -56,6 +58,7 @@ export class CarBrandsController {
   }
 
   @Delete(':id')
+  @UseGuards(JwtAuthGuard)
   remove(@Param('id') id: string): Promise<void> {
     return this.carBrandsService.remove(id);
   }

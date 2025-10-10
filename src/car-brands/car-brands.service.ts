@@ -19,9 +19,7 @@ export class CarBrandsService {
   ) {}
 
   async findAll(): Promise<CarBrand[]> {
-    return this.carBrandRepository.find({
-      where: { deletedAt: IsNull() },
-    });
+    return this.carBrandRepository.find();
   }
 
   async findOne(id: string): Promise<CarBrand> {

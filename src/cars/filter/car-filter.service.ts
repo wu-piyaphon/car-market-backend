@@ -25,24 +25,25 @@ export class CarFilterService {
       { field: 'brand', value: query.brand, path: 'brand.id' },
       { field: 'category', value: query.category, path: 'category.id' },
       { field: 'model', value: query.model, path: 'car.model' },
-      { field: 'subModel', value: query.subModel, path: 'car.subModel' },
+      { field: 'subModel', value: query.subModel, path: 'car.sub_model' },
       {
         field: 'transmission',
         value: query.transmission,
         path: 'car.transmission',
       },
       { field: 'color', value: query.color, path: 'car.color' },
-      { field: 'modelYear', value: query.modelYear, path: 'car.modelYear' },
-      { field: 'engineType', value: query.engineType, path: 'car.engineType' },
+      { field: 'modelYear', value: query.modelYear, path: 'car.model_year' },
+      { field: 'engineType', value: query.engineType, path: 'car.engine_type' },
       {
         field: 'engineCapacity',
         value: query.engineCapacity,
-        path: 'car.engineCapacity',
+        path: 'car.engine_capacity',
       },
     ];
 
     const getDistinctWithCount = async (
       column: string,
+      nameColumn?: string,
       imageColumn?: string,
     ): Promise<
       Array<{ id: string; name: string; count: number; image?: string }>
@@ -51,7 +52,8 @@ export class CarFilterService {
         .createQueryBuilder('car')
         .leftJoin('car.brand', 'brand')
         .leftJoin('car.type', 'type')
-        .leftJoin('car.category', 'category');
+        .leftJoin('car.category', 'category')
+        .where('car.is_active = :isActive', { isActive: true }); // Only active cars
 
       // Apply all filters except the one for the current column
       eqFilters.forEach(({ field, value, path }) => {
@@ -62,12 +64,25 @@ export class CarFilterService {
 
       // Build select and group by clauses
       const selectCols = [`${column} as value`, `COUNT(*) as count`];
+      const groupByCols = [column];
+
+      if (nameColumn) {
+        selectCols.push(`${nameColumn} as name`);
+        groupByCols.push(nameColumn);
+      }
       if (imageColumn) {
         selectCols.push(`${imageColumn} as image`);
-        subQb.groupBy('value').addGroupBy(imageColumn);
-      } else {
-        subQb.groupBy(column);
+        groupByCols.push(imageColumn);
       }
+
+      // Apply GROUP BY for all selected columns
+      groupByCols.forEach((col, index) => {
+        if (index === 0) {
+          subQb.groupBy(col);
+        } else {
+          subQb.addGroupBy(col);
+        }
+      });
 
       const rows = await subQb.select(selectCols).getRawMany();
 
@@ -75,7 +90,7 @@ export class CarFilterService {
         .filter((row) => row.value !== null)
         .map((row) => ({
           id: String(row.value),
-          name: String(row.value),
+          name: String(row.name || row.value),
           count: Number(row.count),
           ...(row.image ? { image: row.image } : {}),
         }));
@@ -94,16 +109,16 @@ export class CarFilterService {
       rawEngineTypes,
       rawEngineCapacities,
     ] = await Promise.all([
-      getDistinctWithCount('brand.id', 'brand.image'),
-      getDistinctWithCount('type.id', 'type.image'),
-      getDistinctWithCount('category.id'),
+      getDistinctWithCount('brand.id', 'brand.name', 'brand.image'),
+      getDistinctWithCount('type.id', 'type.name', 'type.image'),
+      getDistinctWithCount('category.id', 'category.name'),
       getDistinctWithCount('car.model'),
-      getDistinctWithCount('car.subModel'),
-      getDistinctWithCount('car.modelYear'),
+      getDistinctWithCount('car.sub_model'),
+      getDistinctWithCount('car.model_year'),
       getDistinctWithCount('car.transmission'),
       getDistinctWithCount('car.color'),
-      getDistinctWithCount('car.engineType'),
-      getDistinctWithCount('car.engineCapacity'),
+      getDistinctWithCount('car.engine_type'),
+      getDistinctWithCount('car.engine_capacity'),
     ]);
 
     const colors = rawColors.map((color) => ({

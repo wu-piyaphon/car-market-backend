@@ -19,6 +19,7 @@ describe('CarFilterService', () => {
   beforeEach(async () => {
     mockQueryBuilder = {
       leftJoin: jest.fn().mockReturnThis(),
+      where: jest.fn().mockReturnThis(),
       andWhere: jest.fn().mockReturnThis(),
       select: jest.fn().mockReturnThis(),
       groupBy: jest.fn().mockReturnThis(),
@@ -193,7 +194,7 @@ describe('CarFilterService', () => {
       mockQueryBuilder.getRawMany.mockResolvedValue([]);
 
       const query: CarFilterQueryDto = {
-        brand: 'Toyota',
+        brand: 'TOYOTA',
         type: 'SUV',
         category: 'NEW',
         model: 'Corolla',
@@ -213,15 +214,15 @@ describe('CarFilterService', () => {
 
       // Verify that filters are applied correctly
       expect(mockQueryBuilder.andWhere).toHaveBeenCalledWith(
-        'type.name = :type',
+        'type.id = :type',
         { type: 'SUV' },
       );
       expect(mockQueryBuilder.andWhere).toHaveBeenCalledWith(
-        'brand.name = :brand',
-        { brand: 'Toyota' },
+        'brand.id = :brand',
+        { brand: 'TOYOTA' },
       );
       expect(mockQueryBuilder.andWhere).toHaveBeenCalledWith(
-        'category.name = :category',
+        'category.id = :category',
         { category: 'NEW' },
       );
       expect(mockQueryBuilder.andWhere).toHaveBeenCalledWith(
@@ -229,7 +230,7 @@ describe('CarFilterService', () => {
         { model: 'Corolla' },
       );
       expect(mockQueryBuilder.andWhere).toHaveBeenCalledWith(
-        'car.subModel = :subModel',
+        'car.sub_model = :subModel',
         { subModel: 'Altis' },
       );
       expect(mockQueryBuilder.andWhere).toHaveBeenCalledWith(
@@ -241,15 +242,15 @@ describe('CarFilterService', () => {
         { color: 'red' },
       );
       expect(mockQueryBuilder.andWhere).toHaveBeenCalledWith(
-        'car.modelYear = :modelYear',
+        'car.model_year = :modelYear',
         { modelYear: 2020 },
       );
       expect(mockQueryBuilder.andWhere).toHaveBeenCalledWith(
-        'car.engineType = :engineType',
+        'car.engine_type = :engineType',
         { engineType: EngineType.HYBRID },
       );
       expect(mockQueryBuilder.andWhere).toHaveBeenCalledWith(
-        'car.engineCapacity = :engineCapacity',
+        'car.engine_capacity = :engineCapacity',
         { engineCapacity: 1800 },
       );
     });
@@ -269,17 +270,17 @@ describe('CarFilterService', () => {
 
       // Assert - Only category filter should be applied
       expect(mockQueryBuilder.andWhere).toHaveBeenCalledWith(
-        'category.name = :category',
+        'category.id = :category',
         { category: 'NEW' },
       );
 
       // Brand and type filters should not be applied due to empty/undefined values
       expect(mockQueryBuilder.andWhere).not.toHaveBeenCalledWith(
-        'brand.name = :brand',
+        'brand.id = :brand',
         { brand: '' },
       );
       expect(mockQueryBuilder.andWhere).not.toHaveBeenCalledWith(
-        'type.name = :type',
+        'type.id = :type',
         { type: undefined },
       );
     });
@@ -309,8 +310,8 @@ describe('CarFilterService', () => {
     it('should handle mixed data types in results', async () => {
       // Arrange
       const mockData = [
-        [{ value: 'Toyota', count: '5', image: 'toyota-url' }], // brands - count as string
-        [{ value: 'SUV', count: 4.5, image: 'suv-url' }], // types - count as float
+        [{ value: 'TOYOTA', name: 'Toyota', count: '5', image: 'toyota-url' }], // brands - count as string
+        [{ value: 'SUV', name: 'รถ SUV', count: 4.5, image: 'suv-url' }], // types - count as float
         [{ value: 123, count: 2 }], // categories - value as number
         [], // models
         [], // subModels
@@ -338,10 +339,10 @@ describe('CarFilterService', () => {
 
       // Assert - Values should be converted to strings, counts to numbers
       expect(result.brands).toEqual([
-        { id: 'Toyota', name: 'Toyota', count: 5, image: 'toyota-url' },
+        { id: 'TOYOTA', name: 'Toyota', count: 5, image: 'toyota-url' },
       ]);
       expect(result.types).toEqual([
-        { id: 'SUV', name: 'SUV', count: 4.5, image: 'suv-url' },
+        { id: 'SUV', name: 'รถ SUV', count: 4.5, image: 'suv-url' },
       ]);
       expect(result.categories).toEqual([{ id: '123', name: '123', count: 2 }]);
     });

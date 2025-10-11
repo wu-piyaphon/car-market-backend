@@ -29,7 +29,7 @@ export class EstimateRequestsService {
       ),
     );
 
-    const foundBrand = await this.carBrandsService.findByName(request.brand);
+    const foundBrand = await this.carBrandsService.findOne(request.brand);
 
     const estimateRequest = this.estimateRequestsRepository.create({
       ...request,
@@ -100,7 +100,7 @@ export class EstimateRequestsService {
     userId: string,
   ): Promise<EstimateRequest> {
     const estimateRequestToUpdate = await this.findOneById(id);
-    const foundBrand = await this.carBrandsService.findByName(
+    const foundBrand = await this.carBrandsService.findOne(
       updateEstimateRequestDto.brand,
     );
 

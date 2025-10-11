@@ -5,7 +5,7 @@ import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class CreateEstimateRequestDto {
   @IsNotEmpty()
-  @ApiProperty({ description: 'Car brand' })
+  @ApiProperty({ description: 'Car brand ID' })
   brand: string;
 
   @IsString()

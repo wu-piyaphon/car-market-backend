@@ -1,5 +1,6 @@
 import { CarBrand } from '@/car-brands/entities/car-brand.entity';
 import { RequestContactStatus } from '@/common/enums/request.enum';
+import { numericTransformer } from '@/common/utils/transform.utils';
 import { User } from '@/users/user.entity';
 import {
   Column,
@@ -42,12 +43,13 @@ export class EstimateRequest {
   note: string;
 
   @Column({
-    name: 'installments_in_month',
-    type: 'int',
+    name: 'remaining_installment_amount',
+    type: 'decimal',
+    transformer: numericTransformer,
     default: null,
     nullable: true,
   })
-  installmentsInMonth: number | null;
+  remainingInstallmentAmount: number | null;
 
   @Column({
     name: 'status',

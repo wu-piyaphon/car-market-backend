@@ -41,5 +41,5 @@ export class CreateEstimateRequestDto {
   @ApiProperty({
     description: 'Estimate request outstanding installments in month',
   })
-  installmentsInMonth: number | null;
+  remainingInstallmentAmount: number | null;
 }

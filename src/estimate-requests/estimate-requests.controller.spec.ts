@@ -56,7 +56,7 @@ describe('EstimateRequestsController', () => {
         firstName: 'John',
         phoneNumber: '1234567890',
         lineId: 'line123',
-        installmentsInMonth: 12,
+        remainingInstallmentAmount: 12,
       };
 
       const files: Express.Multer.File[] = [
@@ -81,7 +81,7 @@ describe('EstimateRequestsController', () => {
         firstName: 'John',
         phoneNumber: '1234567890',
         lineId: 'line123',
-        installmentsInMonth: 12,
+        remainingInstallmentAmount: 12,
         images: ['image-url'],
         status: RequestContactStatus.NOT_CONTACTED,
         note: '',
@@ -107,7 +107,7 @@ describe('EstimateRequestsController', () => {
         firstName: 'John',
         phoneNumber: '1234567890',
         lineId: null,
-        installmentsInMonth: null,
+        remainingInstallmentAmount: null,
       };
 
       const files: Express.Multer.File[] = [];
@@ -119,7 +119,7 @@ describe('EstimateRequestsController', () => {
         firstName: 'John',
         phoneNumber: '1234567890',
         lineId: null,
-        installmentsInMonth: null,
+        remainingInstallmentAmount: null,
         images: [],
         status: RequestContactStatus.NOT_CONTACTED,
         note: '',
@@ -215,7 +215,7 @@ describe('EstimateRequestsController', () => {
         firstName: 'John',
         phoneNumber: '1234567890',
         lineId: 'line123',
-        installmentsInMonth: 12,
+        remainingInstallmentAmount: 12,
         images: ['image-url'],
         status: RequestContactStatus.NOT_CONTACTED,
         note: '',
@@ -253,7 +253,7 @@ describe('EstimateRequestsController', () => {
         firstName: 'Updated John',
         phoneNumber: '1234567890',
         lineId: 'line123',
-        installmentsInMonth: 12,
+        remainingInstallmentAmount: 12,
         images: ['image-url'],
         status: RequestContactStatus.CONTACTED,
         note: 'Updated note',
@@ -287,7 +287,7 @@ describe('EstimateRequestsController', () => {
         firstName: 'John',
         phoneNumber: '1234567890',
         lineId: 'line123',
-        installmentsInMonth: 12,
+        remainingInstallmentAmount: 12,
         images: ['image-url'],
         status: RequestContactStatus.CONTACTED,
         note: '',

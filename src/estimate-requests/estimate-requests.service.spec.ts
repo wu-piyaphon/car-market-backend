@@ -88,7 +88,7 @@ describe('EstimateRequestsService', () => {
         firstName: 'John',
         phoneNumber: '1234567890',
         lineId: 'line123',
-        installmentsInMonth: 12,
+        remainingInstallmentAmount: 12,
       };
 
       const files: Express.Multer.File[] = [
@@ -119,7 +119,7 @@ describe('EstimateRequestsService', () => {
         firstName: createDto.firstName,
         phoneNumber: createDto.phoneNumber,
         lineId: createDto.lineId,
-        installmentsInMonth: createDto.installmentsInMonth,
+        remainingInstallmentAmount: createDto.remainingInstallmentAmount,
         images: uploadedImageUrls,
         status: RequestContactStatus.NOT_CONTACTED,
         note: '',
@@ -159,7 +159,7 @@ describe('EstimateRequestsService', () => {
         firstName: 'John',
         phoneNumber: '1234567890',
         lineId: null,
-        installmentsInMonth: null,
+        remainingInstallmentAmount: null,
       };
 
       const files: Express.Multer.File[] = [];
@@ -175,7 +175,7 @@ describe('EstimateRequestsService', () => {
         firstName: createDto.firstName,
         phoneNumber: createDto.phoneNumber,
         lineId: null,
-        installmentsInMonth: null,
+        remainingInstallmentAmount: null,
         images: [],
         status: RequestContactStatus.NOT_CONTACTED,
         note: '',
@@ -222,7 +222,7 @@ describe('EstimateRequestsService', () => {
           firstName: 'John',
           phoneNumber: '1234567890',
           lineId: 'line123',
-          installmentsInMonth: 12,
+          remainingInstallmentAmount: 12,
           images: ['image-url'],
           status: RequestContactStatus.NOT_CONTACTED,
           note: '',
@@ -298,7 +298,7 @@ describe('EstimateRequestsService', () => {
         firstName: 'John',
         phoneNumber: '1234567890',
         lineId: 'line123',
-        installmentsInMonth: 12,
+        remainingInstallmentAmount: 12,
         images: ['image-url'],
         status: RequestContactStatus.NOT_CONTACTED,
         note: '',
@@ -345,7 +345,7 @@ describe('EstimateRequestsService', () => {
         firstName: 'John',
         phoneNumber: '1234567890',
         lineId: 'line123',
-        installmentsInMonth: 12,
+        remainingInstallmentAmount: 12,
         images: ['image-url'],
         status: RequestContactStatus.NOT_CONTACTED,
         note: '',
@@ -411,7 +411,7 @@ describe('EstimateRequestsService', () => {
         firstName: 'John',
         phoneNumber: '1234567890',
         lineId: 'line123',
-        installmentsInMonth: 12,
+        remainingInstallmentAmount: 12,
         images: ['image-url'],
         status: RequestContactStatus.NOT_CONTACTED,
         note: '',

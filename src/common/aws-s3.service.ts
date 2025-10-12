@@ -25,8 +25,10 @@ export class AwsS3Service {
 
   async uploadFile(file: Express.Multer.File, dir: string): Promise<string> {
     const timestamp = Date.now();
+    const extension = file.originalname.split('.').pop();
+    const nameWithoutExt = file.originalname.replace(/\.[^/.]+$/, '');
 
-    const key = `${dir}/${timestamp}/${file.originalname}`;
+    const key = `${dir}/${nameWithoutExt}-${timestamp}.${extension}`;
 
     await this.s3.send(
       new PutObjectCommand({

@@ -137,7 +137,7 @@ export class CarsService {
     if (keyword) {
       const keywordLower = keyword.toLowerCase();
       qb.andWhere(
-        '(LOWER(car.model) ILIKE :keyword OR LOWER(car.sub_model) ILIKE :keyword OR LOWER(car.previous_license_plate) ILIKE :keyword OR LOWER(car.new_license_plate) ILIKE :keyword)',
+        '(LOWER(car.model) ILIKE :keyword OR LOWER(car.sub_model) ILIKE :keyword OR LOWER(car.original_license_plate) ILIKE :keyword OR LOWER(car.current_license_plate) ILIKE :keyword)',
         { keyword: `%${keywordLower}%` },
       );
     }

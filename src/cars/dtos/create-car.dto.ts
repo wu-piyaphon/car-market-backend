@@ -83,13 +83,13 @@ export class CreateCarDto {
 
   @IsString()
   @IsOptional()
-  @ApiProperty({ description: 'Car previous license plate' })
-  previousLicensePlate: string;
+  @ApiProperty({ description: 'Car original license plate' })
+  originalLicensePlate: string;
 
   @IsString()
   @IsNotEmpty()
-  @ApiProperty({ description: 'Car new license plate' })
-  newLicensePlate: string;
+  @ApiProperty({ description: 'Car current license plate' })
+  currentLicensePlate: string;
 
   @IsEnum(SalesRequestType)
   @IsNotEmpty()

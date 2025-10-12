@@ -6,12 +6,15 @@ import { Repository } from 'typeorm';
 import { CarFilterQueryDto } from '../dtos/car-filter-query.dto';
 import { CarFilterResponseDto } from '../dtos/car-filter-response.dto';
 import { Car } from '../entities/car.entity';
+import { CarType } from '@/car-types/entities/car-type.entity';
 
 @Injectable()
 export class CarFilterService {
   constructor(
     @InjectRepository(Car)
     private readonly carsRepository: Repository<Car>,
+    @InjectRepository(CarType)
+    private readonly carTypesRepository: Repository<CarType>,
   ) {}
 
   async getFilters(query: CarFilterQueryDto): Promise<CarFilterResponseDto> {
@@ -80,6 +83,24 @@ export class CarFilterService {
       });
 
       const rows = await subQb.select(selectCols).getRawMany();
+
+      if (column === 'type.id') {
+        const allCarTypes = await this.carTypesRepository
+          .createQueryBuilder('type')
+          .select(['type.id', 'type.name', 'type.image'])
+          .getMany();
+
+        // Include all car types, even those with zero count
+        return allCarTypes.map((type) => {
+          const matchedRow = rows.find((row) => row.value === type.id);
+          return {
+            id: String(type.id),
+            name: String(type.name),
+            count: matchedRow ? Number(matchedRow.count) : 0,
+            image: type.image,
+          };
+        });
+      }
 
       return rows
         .filter((row) => row.value !== null)

@@ -5,11 +5,7 @@ import { CreateCarDto } from '@/cars/dtos/create-car.dto';
 import { UpdateCarDto } from '@/cars/dtos/update-car.dto';
 import { Car } from '@/cars/entities/car.entity';
 import { AwsS3Service } from '@/common/aws-s3.service';
-import {
-  COLOR_TRANSLATIONS,
-  ENGINE_TYPE_TRANSLATIONS,
-  TRANSMISSION_TRANSLATIONS,
-} from '@/common/constants/translation.constants';
+import { TRANSMISSION_TRANSLATIONS } from '@/common/constants/translation.constants';
 import { PaginationResponseDto } from '@/common/dtos/pagination-response.dto';
 import { generateCarSlug } from '@/common/utils/slug.utils';
 import { Injectable, NotFoundException } from '@nestjs/common';
@@ -179,10 +175,8 @@ export class CarsService {
 
     const translatedCarData = {
       ...car,
-      color: COLOR_TRANSLATIONS[car.color] || car.color,
       transmission:
         TRANSMISSION_TRANSLATIONS[car.transmission] || car.transmission,
-      engineType: ENGINE_TYPE_TRANSLATIONS[car.engineType] || car.engineType,
     };
 
     return translatedCarData;

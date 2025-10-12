@@ -1,4 +1,3 @@
-import { EngineType } from '@/common/enums/engine-type.enum';
 import { SalesRequestType } from '@/common/enums/request.enum';
 import { Transmission } from '@/common/enums/transmission.enum';
 import { toBoolean, toNumber } from '@/common/utils/transform.utils';
@@ -58,10 +57,10 @@ export class CreateCarDto {
   @ApiProperty({ description: 'Car color' })
   color: string;
 
-  @IsEnum(EngineType)
+  @IsString()
   @IsNotEmpty()
-  @ApiProperty({ description: 'Car engine type', enum: EngineType })
-  engineType: EngineType;
+  @ApiProperty({ description: 'Car engine type' })
+  engineType: string;
 
   @IsNumber()
   @IsNotEmpty()

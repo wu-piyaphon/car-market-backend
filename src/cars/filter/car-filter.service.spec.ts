@@ -1,5 +1,3 @@
-import { ENGINE_TYPE_TRANSLATIONS } from '@/common/constants/translation.constants';
-import { EngineType } from '@/common/enums/engine-type.enum';
 import { Transmission } from '@/common/enums/transmission.enum';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
@@ -68,7 +66,7 @@ describe('CarFilterService', () => {
         [{ value: 2020, count: 2 }], // modelYears
         [{ value: Transmission.AUTOMATIC, count: 4 }], // transmissions
         [{ value: 'red', count: 2 }], // colors
-        [{ value: EngineType.HYBRID, count: 1 }], // engineTypes
+        [{ value: 'ไฮบริด', count: 1 }], // engineTypes
         [{ value: 500, count: 0 }], // engineCapacities
       ];
 
@@ -113,8 +111,8 @@ describe('CarFilterService', () => {
         colors: [{ id: 'red', name: 'red', count: 2 }],
         engineTypes: [
           {
-            id: EngineType.HYBRID,
-            name: ENGINE_TYPE_TRANSLATIONS[EngineType.HYBRID],
+            id: 'ไฮบริด',
+            name: 'ไฮบริด',
             count: 1,
           },
         ],
@@ -202,7 +200,7 @@ describe('CarFilterService', () => {
         transmission: Transmission.AUTOMATIC,
         color: 'red',
         modelYear: 2020,
-        engineType: EngineType.HYBRID,
+        engineType: 'ไฮบริด',
         engineCapacity: 1800,
       };
 
@@ -247,7 +245,7 @@ describe('CarFilterService', () => {
       );
       expect(mockQueryBuilder.andWhere).toHaveBeenCalledWith(
         'car.engine_type = :engineType',
-        { engineType: EngineType.HYBRID },
+        { engineType: 'ไฮบริด' },
       );
       expect(mockQueryBuilder.andWhere).toHaveBeenCalledWith(
         'car.engine_capacity = :engineCapacity',

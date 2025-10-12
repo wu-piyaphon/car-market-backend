@@ -1,9 +1,4 @@
-import {
-  COLOR_TRANSLATIONS,
-  ENGINE_TYPE_TRANSLATIONS,
-  TRANSMISSION_TRANSLATIONS,
-} from '@/common/constants/translation.constants';
-import { EngineType } from '@/common/enums/engine-type.enum';
+import { TRANSMISSION_TRANSLATIONS } from '@/common/constants/translation.constants';
 import { Transmission } from '@/common/enums/transmission.enum';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -105,8 +100,8 @@ export class CarFilterService {
       subModels,
       modelYears,
       rawTransmissions,
-      rawColors,
-      rawEngineTypes,
+      colors,
+      engineTypes,
       rawEngineCapacities,
     ] = await Promise.all([
       getDistinctWithCount('brand.id', 'brand.name', 'brand.image'),
@@ -121,22 +116,11 @@ export class CarFilterService {
       getDistinctWithCount('car.engine_capacity'),
     ]);
 
-    const colors = rawColors.map((color) => ({
-      ...color,
-      name: COLOR_TRANSLATIONS[color.id] || color.id,
-    }));
-
     const transmissions = rawTransmissions.map((transmission) => ({
       ...transmission,
       name:
         TRANSMISSION_TRANSLATIONS[transmission.id as Transmission] ||
         transmission.id,
-    }));
-
-    const engineTypes = rawEngineTypes.map((engineType) => ({
-      ...engineType,
-      name:
-        ENGINE_TYPE_TRANSLATIONS[engineType.id as EngineType] || engineType.id,
     }));
 
     const engineCapacities = rawEngineCapacities

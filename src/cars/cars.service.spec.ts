@@ -1,7 +1,6 @@
 import { CarBrandsService } from '@/car-brands/car-brands.service';
 import { AwsS3Service } from '@/common/aws-s3.service';
 import { PaginationResponseDto } from '@/common/dtos/pagination-response.dto';
-import { EngineType } from '@/common/enums/engine-type.enum';
 import { SalesRequestType } from '@/common/enums/request.enum';
 import { Transmission } from '@/common/enums/transmission.enum';
 import { NotFoundException } from '@nestjs/common';
@@ -20,10 +19,7 @@ jest.mock('@/common/utils/slug.utils', () => ({
   generateCarSlug: jest.fn(),
 }));
 
-import {
-  ENGINE_TYPE_TRANSLATIONS,
-  TRANSMISSION_TRANSLATIONS,
-} from '@/common/constants/translation.constants';
+import { TRANSMISSION_TRANSLATIONS } from '@/common/constants/translation.constants';
 import { generateCarSlug } from '@/common/utils/slug.utils';
 
 describe('CarsService', () => {
@@ -106,7 +102,7 @@ describe('CarsService', () => {
         transmission: Transmission.MANUAL,
         modelYear: 2020,
         color: 'Red',
-        engineType: EngineType.GASOLINE,
+        engineType: 'เบนซิน',
         engineCapacity: 2000,
         mileage: 15000,
         price: 25000,
@@ -201,7 +197,7 @@ describe('CarsService', () => {
         transmission: Transmission.AUTOMATIC,
         modelYear: 2019,
         color: 'Blue',
-        engineType: EngineType.GASOLINE,
+        engineType: 'เบนซิน',
         engineCapacity: 1600,
         mileage: 25000,
         price: 20000,
@@ -298,7 +294,7 @@ describe('CarsService', () => {
           modelYear: 2020,
           transmission: Transmission.MANUAL,
           color: 'Red',
-          engineType: EngineType.GASOLINE,
+          engineType: 'เบนซิน',
           engineCapacity: 2000,
           mileage: 15000,
           price: 25000,
@@ -428,7 +424,7 @@ describe('CarsService', () => {
         modelYear: 2020,
         transmission: Transmission.MANUAL,
         color: 'Red',
-        engineType: EngineType.GASOLINE,
+        engineType: 'เบนซิน',
         engineCapacity: 2000,
         mileage: 15000,
         price: 25000,
@@ -483,7 +479,7 @@ describe('CarsService', () => {
         modelYear: 2020,
         transmission: Transmission.MANUAL,
         color: 'Red',
-        engineType: EngineType.GASOLINE,
+        engineType: 'เบนซิน',
         engineCapacity: 2000,
         mileage: 15000,
         price: 25000,
@@ -512,7 +508,6 @@ describe('CarsService', () => {
       expect(result).toEqual({
         ...mockCar,
         transmission: TRANSMISSION_TRANSLATIONS[mockCar.transmission],
-        engineType: ENGINE_TYPE_TRANSLATIONS[mockCar.engineType],
       });
     });
 
@@ -570,7 +565,7 @@ describe('CarsService', () => {
         modelYear: 2020,
         transmission: Transmission.MANUAL,
         color: 'Red',
-        engineType: EngineType.GASOLINE,
+        engineType: 'เบนซิน',
         engineCapacity: 2000,
         mileage: 15000,
         price: 25000,
@@ -665,7 +660,7 @@ describe('CarsService', () => {
         modelYear: 2020,
         transmission: Transmission.MANUAL,
         color: 'Red',
-        engineType: EngineType.GASOLINE,
+        engineType: 'เบนซิน',
         engineCapacity: 2000,
         mileage: 15000,
         price: 25000,
@@ -720,7 +715,7 @@ describe('CarsService', () => {
         modelYear: 2020,
         transmission: Transmission.MANUAL,
         color: 'Red',
-        engineType: EngineType.GASOLINE,
+        engineType: 'เบนซิน',
         engineCapacity: 2000,
         mileage: 15000,
         price: 25000,
@@ -773,7 +768,7 @@ describe('CarsService', () => {
         modelYear: 2020,
         transmission: Transmission.MANUAL,
         color: 'Red',
-        engineType: EngineType.GASOLINE,
+        engineType: 'เบนซิน',
         engineCapacity: 2000,
         mileage: 15000,
         price: 25000,

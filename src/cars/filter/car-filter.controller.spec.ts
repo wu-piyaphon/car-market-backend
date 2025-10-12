@@ -3,7 +3,6 @@ import { CarFilterController } from './car-filter.controller';
 import { CarFilterService } from './car-filter.service';
 import { CarFilterQueryDto } from '../dtos/car-filter-query.dto';
 import { CarFilterResponseDto } from '../dtos/car-filter-response.dto';
-import { EngineType } from '@/common/enums/engine-type.enum';
 import { Transmission } from '@/common/enums/transmission.enum';
 
 describe('CarFilterController', () => {
@@ -78,8 +77,8 @@ describe('CarFilterController', () => {
           { id: 'blue', name: 'blue', count: 3 },
         ],
         engineTypes: [
-          { id: EngineType.HYBRID, name: EngineType.HYBRID, count: 1 },
-          { id: EngineType.GASOLINE, name: EngineType.GASOLINE, count: 6 },
+          { id: 'ไฮบริด', name: 'ไฮบริด', count: 1 },
+          { id: 'เบนซิน', name: 'เบนซิน', count: 6 },
         ],
         engineCapacities: [
           { id: '1800', name: '1800', count: 2 },
@@ -106,7 +105,7 @@ describe('CarFilterController', () => {
         transmission: Transmission.AUTOMATIC,
         color: 'red',
         modelYear: 2020,
-        engineType: EngineType.HYBRID,
+        engineType: 'ไฮบริด',
         engineCapacity: 1800,
       };
       const expectedResult: CarFilterResponseDto = {
@@ -126,9 +125,7 @@ describe('CarFilterController', () => {
           },
         ],
         colors: [{ id: 'red', name: 'red', count: 2 }],
-        engineTypes: [
-          { id: EngineType.HYBRID, name: EngineType.HYBRID, count: 2 },
-        ],
+        engineTypes: [{ id: 'ไฮบริด', name: 'ไฮบริด', count: 2 }],
         engineCapacities: [{ id: '1800', name: '1800', count: 2 }],
       };
 
@@ -187,9 +184,7 @@ describe('CarFilterController', () => {
           { id: Transmission.MANUAL, name: Transmission.MANUAL, count: 1 },
         ],
         colors: [{ id: 'white', name: 'white', count: 1 }],
-        engineTypes: [
-          { id: EngineType.GASOLINE, name: EngineType.GASOLINE, count: 1 },
-        ],
+        engineTypes: [{ id: 'เบนซิน', name: 'เบนซิน', count: 1 }],
         engineCapacities: [{ id: '2000', name: '2000', count: 1 }],
       };
 

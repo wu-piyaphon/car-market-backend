@@ -1,7 +1,6 @@
 import { CarBrand } from '@/car-brands/entities/car-brand.entity';
 import { CarCategory } from '@/car-categories/entities/car-category.entity';
 import { CarType } from '@/car-types/entities/car-type.entity';
-import { EngineType } from '@/common/enums/engine-type.enum';
 import { SalesRequestType } from '@/common/enums/request.enum';
 import { Transmission } from '@/common/enums/transmission.enum';
 import { numericTransformer } from '@/common/utils/transform.utils';
@@ -39,8 +38,8 @@ export class Car {
   @Column()
   color: string;
 
-  @Column({ name: 'engine_type', type: 'enum', enum: EngineType })
-  engineType: EngineType;
+  @Column({ name: 'engine_type' })
+  engineType: string;
 
   @Column({ name: 'engine_capacity' })
   engineCapacity: number;

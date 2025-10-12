@@ -1,4 +1,3 @@
-import { EngineType } from '@/common/enums/engine-type.enum';
 import { SalesRequestType } from '@/common/enums/request.enum';
 import { Transmission } from '@/common/enums/transmission.enum';
 import { toBoolean, toNumber } from '@/common/utils/transform.utils';
@@ -57,10 +56,9 @@ export class CarListQueryDto {
   modelYear?: number;
 
   @IsOptional()
-  @IsEnum(EngineType)
-  @Transform(({ value }) => (!value ? undefined : value))
-  @ApiPropertyOptional({ description: 'Car engine type', enum: EngineType })
-  engineType?: EngineType;
+  @IsString()
+  @ApiPropertyOptional({ description: 'Car engine type' })
+  engineType?: string;
 
   @IsOptional()
   @IsNumber()

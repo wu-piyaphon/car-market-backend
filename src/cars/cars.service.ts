@@ -12,6 +12,12 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
+// ----------------------------------------------------------------------
+
+const CAR_IMAGE_DESTINATION = (brand: string) => `cars/${brand}`;
+
+// ----------------------------------------------------------------------
+
 @Injectable()
 export class CarsService {
   constructor(
@@ -26,12 +32,14 @@ export class CarsService {
     files: Express.Multer.File[],
     userId: string,
   ) {
-    const images = await Promise.all(
-      files.map((file) => this.awsS3Service.uploadFile(file, 'cars')),
-    );
-
     const brand = await this.carBrandsService.findOne(car.brandId);
     const slug = generateCarSlug(brand.name, car);
+
+    const images = await Promise.all(
+      files.map((file) =>
+        this.awsS3Service.uploadFile(file, CAR_IMAGE_DESTINATION(brand.id)),
+      ),
+    );
 
     const createdCar = this.carsRepository.create({
       ...car,
@@ -196,7 +204,12 @@ export class CarsService {
     }
 
     const images = await Promise.all(
-      files.map((image) => this.awsS3Service.uploadFile(image, 'cars')),
+      files.map((image) =>
+        this.awsS3Service.uploadFile(
+          image,
+          CAR_IMAGE_DESTINATION(updateCarDto.brandId),
+        ),
+      ),
     );
 
     const updatedCar = this.carsRepository.merge(existingCar, {

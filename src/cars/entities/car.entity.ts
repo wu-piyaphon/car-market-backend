@@ -53,7 +53,9 @@ export class Car {
   })
   price: number;
 
-  @Column('text', { array: true })
+  @Column('text', {
+    array: true,
+  })
   images: string[];
 
   @Column({ name: 'original_license_plate', nullable: true })

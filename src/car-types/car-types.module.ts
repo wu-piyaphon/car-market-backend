@@ -9,5 +9,6 @@ import { CommonModule } from '@/common/common.module';
   imports: [TypeOrmModule.forFeature([CarType]), CommonModule],
   controllers: [CarTypesController],
   providers: [CarTypesService],
+  exports: [CarTypesService],
 })
 export class CarTypesModule {}

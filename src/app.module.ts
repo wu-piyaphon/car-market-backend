@@ -12,6 +12,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppConfig } from './config';
 import { DatabaseConfig } from './config/data-source';
+import { ImportsModule } from './imports/imports.module';
 
 @Module({
   imports: [
@@ -36,6 +37,7 @@ import { DatabaseConfig } from './config/data-source';
     SellingRequestsModule,
     EstimateRequestsModule,
     CommonModule,
+    ImportsModule,
   ],
 })
 export class AppModule {}

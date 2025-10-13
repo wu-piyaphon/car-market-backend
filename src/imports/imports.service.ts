@@ -258,7 +258,7 @@ export class ImportsService {
       throw new Error(`Invalid engine capacity: ${carDto.engineCapacity}`);
     }
 
-    if (isNaN(carDto.price) || carDto.price <= 0) {
+    if (isNaN(carDto.price) || carDto.price < 0) {
       throw new Error(`Invalid price: ${carDto.price}`);
     }
 

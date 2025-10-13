@@ -112,6 +112,44 @@ export class CarBrandsService {
     return this.findOne(id);
   }
 
+  async createWithImageUrl(
+    id: string,
+    name: string,
+    imageUrl: string,
+  ): Promise<CarBrand> {
+    const existingBrand = await this.carBrandRepository.findOne({
+      where: { id },
+      withDeleted: true,
+    });
+
+    if (existingBrand && !existingBrand.deletedAt) {
+      throw new BadRequestException('Car brand already exists');
+    }
+
+    if (existingBrand && existingBrand.deletedAt) {
+      await this.restore(existingBrand.id);
+      // Update the existing brand with new data
+      existingBrand.name = name;
+      existingBrand.image = imageUrl;
+      return await this.carBrandRepository.save(existingBrand);
+    }
+
+    const brand = this.carBrandRepository.create({
+      id,
+      name,
+      image: imageUrl,
+    });
+
+    try {
+      return await this.carBrandRepository.save(brand);
+    } catch (error) {
+      if (error.code === '23505') {
+        throw new BadRequestException('Car brand already exists');
+      }
+      throw error;
+    }
+  }
+
   async hardDelete(id: string): Promise<void> {
     const brand = await this.carBrandRepository.findOne({
       where: { id },

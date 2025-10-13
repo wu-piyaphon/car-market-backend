@@ -2,10 +2,12 @@ import { CarBrandsService } from '@/car-brands/car-brands.service';
 import { CarTypesService } from '@/car-types/car-types.service';
 import { CarsService } from '@/cars/cars.service';
 import { CreateCarDto } from '@/cars/dtos/create-car.dto';
+import { AwsS3Service } from '@/common/aws-s3.service';
 import { SalesRequestType } from '@/common/enums/request.enum';
 import { Transmission } from '@/common/enums/transmission.enum';
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import * as Papa from 'papaparse';
+import { ImportBrandDto } from './dtos/import-brands.dto';
 
 interface CsvCarRow {
   typeId: string;
@@ -42,6 +44,7 @@ export class ImportsService {
     private readonly carsService: CarsService,
     private readonly carBrandsService: CarBrandsService,
     private readonly carTypesService: CarTypesService,
+    private readonly awsS3Service: AwsS3Service,
   ) {}
 
   async importCars(
@@ -284,5 +287,122 @@ export class ImportsService {
     }
 
     return result;
+  }
+
+  async importBrands(brands: ImportBrandDto[]): Promise<ImportResult> {
+    const result: ImportResult = {
+      totalRows: brands.length,
+      successfulImports: 0,
+      failedImports: 0,
+      errors: [],
+    };
+
+    for (let i = 0; i < brands.length; i++) {
+      const brand = brands[i];
+      try {
+        let imageUrl = '';
+
+        // If imageUrl is provided, download and upload to S3
+        if (brand.imageUrl) {
+          imageUrl = await this.downloadAndUploadImage(
+            brand.imageUrl,
+            brand.id,
+          );
+        }
+
+        // Create the brand
+        await this.carBrandsService.createWithImageUrl(
+          brand.id,
+          brand.name,
+          imageUrl,
+        );
+
+        result.successfulImports++;
+        this.logger.log(
+          `Successfully imported brand: ${brand.name} (${brand.id})`,
+        );
+      } catch (error) {
+        result.failedImports++;
+        const errorMessage =
+          error instanceof Error ? error.message : 'Unknown error';
+        result.errors.push({
+          row: i + 1,
+          data: brand,
+          error: errorMessage,
+        });
+        this.logger.warn(
+          `Failed to import brand ${brand.name} (${brand.id}): ${errorMessage}`,
+        );
+      }
+    }
+
+    this.logger.log(
+      `Brand import completed: ${result.successfulImports}/${result.totalRows} successful`,
+    );
+
+    return result;
+  }
+
+  private async downloadAndUploadImage(
+    imageUrl: string,
+    brandId: string,
+  ): Promise<string> {
+    try {
+      // Download image from URL
+      const response = await fetch(imageUrl);
+      if (!response.ok) {
+        throw new Error(`Failed to download image: ${response.statusText}`);
+      }
+
+      // Get image buffer and content type
+      const buffer = Buffer.from(await response.arrayBuffer());
+      const contentType = response.headers.get('content-type') || 'image/jpeg';
+
+      // Extract file extension from content type or URL
+      let extension = 'jpg';
+      if (contentType.includes('png')) {
+        extension = 'png';
+      } else if (contentType.includes('gif')) {
+        extension = 'gif';
+      } else if (contentType.includes('webp')) {
+        extension = 'webp';
+      } else if (imageUrl.includes('.')) {
+        const urlExtension = imageUrl.split('.').pop()?.toLowerCase();
+        if (
+          urlExtension &&
+          ['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(urlExtension)
+        ) {
+          extension = urlExtension;
+        }
+      }
+
+      // Create a mock file object similar to Express.Multer.File
+      const mockFile: Express.Multer.File = {
+        fieldname: 'image',
+        originalname: `${brandId}-brand-image.${extension}`,
+        encoding: '7bit',
+        mimetype: contentType,
+        size: buffer.length,
+        buffer: buffer,
+        destination: '',
+        filename: '',
+        path: '',
+        stream: null as any,
+      };
+
+      // Upload to S3
+      const uploadedUrl = await this.awsS3Service.uploadFile(
+        mockFile,
+        'brands',
+      );
+      return uploadedUrl;
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
+      this.logger.warn(
+        `Failed to download and upload image from ${imageUrl}: ${errorMessage}`,
+      );
+      throw new Error(`Image upload failed: ${errorMessage}`);
+    }
   }
 }

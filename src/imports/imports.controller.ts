@@ -3,6 +3,7 @@ import { User } from '@/common/decorators/user.decorator';
 import { UserPayload } from '@/common/interfaces/user-payload.interface';
 import {
   BadRequestException,
+  Body,
   Controller,
   Post,
   UploadedFiles,
@@ -11,6 +12,7 @@ import {
 } from '@nestjs/common';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ImportBrandsDto } from './dtos/import-brands.dto';
 import { ImportsService } from './imports.service';
 
 @ApiTags('Imports')
@@ -75,6 +77,34 @@ export class ImportsController {
 
       return {
         message: 'Import completed successfully',
+        ...result,
+      };
+    } catch (error) {
+      if (error instanceof BadRequestException) {
+        throw error;
+      }
+
+      throw new BadRequestException(
+        `Import failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      );
+    }
+  }
+
+  @Post('brands')
+  @UseGuards(JwtAuthGuard)
+  async importBrands(@Body() importBrandsDto: ImportBrandsDto) {
+    // Validate the input
+    if (!importBrandsDto.brands || importBrandsDto.brands.length === 0) {
+      throw new BadRequestException('At least one brand is required');
+    }
+
+    try {
+      const result = await this.importsService.importBrands(
+        importBrandsDto.brands,
+      );
+
+      return {
+        message: 'Brand import completed',
         ...result,
       };
     } catch (error) {

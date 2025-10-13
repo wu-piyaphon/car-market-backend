@@ -274,7 +274,7 @@ export class ImportsService {
    * Parse a number string using Intl.NumberFormat for better reliability
    */
   private parseNumber(value: string): number {
-    if (!value || typeof value !== 'string') {
+    if (value === undefined || value === null || typeof value !== 'string') {
       throw new Error(`Invalid number format: ${value}`);
     }
 

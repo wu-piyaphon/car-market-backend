@@ -1,11 +1,12 @@
 import { SalesRequestType } from '@/common/enums/request.enum';
 import { Transmission } from '@/common/enums/transmission.enum';
-import { toBoolean, toNumber } from '@/common/utils/transform.utils';
+import { toBoolean, toInteger, toNumber } from '@/common/utils/transform.utils';
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
 import {
   IsBoolean,
   IsEnum,
+  IsInt,
   IsNotEmpty,
   IsNumber,
   IsOptional,
@@ -68,9 +69,9 @@ export class CreateCarDto {
   @ApiProperty({ description: 'Car engine capacity' })
   engineCapacity: number;
 
-  @IsNumber()
+  @IsInt()
   @IsOptional()
-  @Transform(({ value }) => toNumber(value))
+  @Transform(({ value }) => toInteger(value))
   @ApiProperty({ description: 'Car mileage' })
   mileage: number;
 

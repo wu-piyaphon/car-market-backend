@@ -1,11 +1,12 @@
 import { SalesRequestType } from '@/common/enums/request.enum';
 import { Transmission } from '@/common/enums/transmission.enum';
-import { toBoolean, toNumber } from '@/common/utils/transform.utils';
+import { toBoolean, toInteger, toNumber } from '@/common/utils/transform.utils';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
 import {
   IsBoolean,
   IsEnum,
+  IsInt,
   IsNumber,
   IsOptional,
   IsString,
@@ -67,15 +68,15 @@ export class CarListQueryDto {
   engineCapacity?: number;
 
   @IsOptional()
-  @IsNumber()
-  @Transform(({ value }) => toNumber(value))
+  @IsInt()
+  @Transform(({ value }) => toInteger(value))
   @Min(0)
   @ApiPropertyOptional({ description: 'Car minimum mileage' })
   minMileage?: number;
 
   @IsOptional()
-  @IsNumber()
-  @Transform(({ value }) => toNumber(value))
+  @IsInt()
+  @Transform(({ value }) => toInteger(value))
   @Min(0)
   @ApiPropertyOptional({ description: 'Car maximum mileage' })
   maxMileage?: number;

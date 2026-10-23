@@ -1,4 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { GUARDS_METADATA } from '@nestjs/common/constants';
+import { JwtAuthGuard } from '@/auth/jwt-auth.guard';
 import { CarCategoriesController } from './car-categories.controller';
 import { CarCategoriesService } from './car-categories.service';
 import { CreateCarCategoryDto } from './dtos/create-car-category.dto';
@@ -233,5 +235,31 @@ describe('CarCategoriesController', () => {
       expect(service.remove).toHaveBeenCalledTimes(1);
       expect(service.remove).toHaveBeenCalledWith(carCategoryId);
     });
+  });
+
+  describe('guards', () => {
+    it.each(['create', 'update', 'remove'] as const)(
+      'should protect %s with JwtAuthGuard',
+      (method) => {
+        const guards = Reflect.getMetadata(
+          GUARDS_METADATA,
+          CarCategoriesController.prototype[method],
+        );
+
+        expect(guards).toContain(JwtAuthGuard);
+      },
+    );
+
+    it.each(['findAll', 'findOne'] as const)(
+      'should keep %s public',
+      (method) => {
+        const guards = Reflect.getMetadata(
+          GUARDS_METADATA,
+          CarCategoriesController.prototype[method],
+        );
+
+        expect(guards).toBeUndefined();
+      },
+    );
   });
 });

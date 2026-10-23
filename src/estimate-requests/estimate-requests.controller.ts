@@ -67,6 +67,7 @@ export class EstimateRequestsController {
   }
 
   @Delete(':id')
+  @UseGuards(JwtAuthGuard)
   delete(@Param('id') id: string) {
     return this.estimateRequestsService.delete(id);
   }

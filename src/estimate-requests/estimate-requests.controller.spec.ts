@@ -1,4 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { GUARDS_METADATA } from '@nestjs/common/constants';
+import { JwtAuthGuard } from '@/auth/jwt-auth.guard';
 import { EstimateRequestsController } from './estimate-requests.controller';
 import { EstimateRequestsService } from './estimate-requests.service';
 import { CreateEstimateRequestDto } from './dtos/create-estimate-request.dto';
@@ -316,6 +318,15 @@ describe('EstimateRequestsController', () => {
 
       expect(service.delete).toHaveBeenCalledWith(id);
       expect(result).toBeUndefined();
+    });
+
+    it('should be protected by JwtAuthGuard', () => {
+      const guards = Reflect.getMetadata(
+        GUARDS_METADATA,
+        EstimateRequestsController.prototype.delete,
+      );
+
+      expect(guards).toContain(JwtAuthGuard);
     });
   });
 });

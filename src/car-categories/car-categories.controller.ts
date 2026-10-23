@@ -6,7 +6,9 @@ import {
   Param,
   Post,
   Put,
+  UseGuards,
 } from '@nestjs/common';
+import { JwtAuthGuard } from '@/auth/jwt-auth.guard';
 import { CarCategoriesService } from '@/car-categories/car-categories.service';
 import { CreateCarCategoryDto } from '@/car-categories/dtos/create-car-category.dto';
 import { UpdateCarCategoryDto } from '@/car-categories/dtos/update-car-category.dto';
@@ -27,6 +29,7 @@ export class CarCategoriesController {
   }
 
   @Post()
+  @UseGuards(JwtAuthGuard)
   create(
     @Body() createCarCategoryDto: CreateCarCategoryDto,
   ): Promise<CarCategory> {
@@ -34,6 +37,7 @@ export class CarCategoriesController {
   }
 
   @Put(':id')
+  @UseGuards(JwtAuthGuard)
   update(
     @Param('id') id: string,
     @Body() updateCarCategoryDto: UpdateCarCategoryDto,
@@ -42,6 +46,7 @@ export class CarCategoriesController {
   }
 
   @Delete(':id')
+  @UseGuards(JwtAuthGuard)
   remove(@Param('id') id: string): Promise<void> {
     return this.carCategoriesService.remove(id);
   }
